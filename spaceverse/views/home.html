@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spaceverse - Explore the Solar System</title>
+    <style>
+        :root {
+            --space-dark: #050510;
+            --space-light: #1a1a3a;
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-amber: #ffb703;
+            --glass-bg: rgba(20, 20, 40, 0.4);
+            --glass-border: rgba(0, 243, 255, 0.3);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            --text-main: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: radial-gradient(circle at center, var(--space-light) 0%, var(--space-dark) 100%);
+            background-attachment: fixed;
+            color: var(--text-main); 
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* Deep Space Multi-Layered Animated Background */
+        .cosmic-background {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -2;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(188, 19, 254, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(255, 183, 3, 0.1) 0%, transparent 40%);
+            animation: nebulaDrift 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes nebulaDrift {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.1); opacity: 1; }
+        }
+
+        /* Twinkling Starfield */
+        .starfield {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 160px 120px, rgba(255, 255, 255, 0.6), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 300px 200px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 250px 350px, rgba(255, 255, 255, 0.9), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 400px 300px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 500px 100px, rgba(255, 255, 255, 0.7), rgba(0,0,0,0));
+            background-size: 550px 450px;
+            animation: starlight 4s infinite alternate;
+        }
+
+        @keyframes starlight {
+            0% { opacity: 0.6; transform: translateY(0); }
+            100% { opacity: 1; transform: translateY(-5px); }
+        }
+
+        /* Glassmorphism Navbar */
+        .navbar {
+            position: fixed;
+            top: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 95%;
+            max-width: 1400px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 0.8rem 2rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: var(--glass-shadow);
+            transition: all 0.4s ease;
+        }
+        
+        .navbar:hover {
+            box-shadow: 0 10px 40px 0 rgba(0, 243, 255, 0.2);
+            border-color: rgba(0, 243, 255, 0.6);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--neon-blue);
+            text-shadow: 0 0 15px rgba(0, 243, 255, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-planet {
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle at 30% 30%, var(--neon-blue), #005b99);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.8), inset -5px -5px 10px rgba(0, 0, 0, 0.4);
+            animation: planetRotate 10s linear infinite;
+        }
+        
+        .logo-ring {
+            position: absolute;
+            width: 48px;
+            height: 14px;
+            border: 2px solid var(--neon-purple);
+            border-radius: 50%;
+            transform: rotateX(70deg);
+            box-shadow: 0 0 15px rgba(188, 19, 254, 0.8);
+            animation: ringPulse 3s infinite alternate;
+        }
+
+        @keyframes planetRotate { 100% { transform: rotate(360deg); } }
+        @keyframes ringPulse { 100% { box-shadow: 0 0 25px rgba(188, 19, 254, 1); border-width: 3px; } }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-grow: 1;
+            margin-left: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0%;
+            height: 2px;
+            background: var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover { color: #fff; }
+        .nav-links a:hover::after { width: 100%; }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 1.2rem;
+            align-items: center;
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 1.8rem;
+            color: var(--neon-blue);
+            background: none;
+            border: none;
+            padding: 0.5rem;
+        }
+
+        #userInfo {
+            display: none;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        #welcomeText {
+            color: var(--neon-blue);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 0.6rem 1.4rem;
+            background: rgba(0, 243, 255, 0.1);
+            border-radius: 30px;
+            border: 1px solid rgba(0, 243, 255, 0.4);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+        }
+
+        #userInfo .btn-secondary {
+            background: rgba(255, 77, 77, 0.1);
+            color: #ff4d4d;
+            border: 1px solid #ff4d4d;
+        }
+
+        #userInfo .btn-secondary:hover {
+            background: #ff4d4d;
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 77, 77, 0.6);
+        }
+        
+        /* Unified Sci-Fi Buttons */
+        .btn {
+            padding: 0.7rem 1.8rem;
+            border-radius: 30px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn-primary {
+            background: transparent;
+            color: var(--neon-blue);
+            border: 1px solid var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--neon-blue);
+            z-index: -1;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .btn-primary:hover {
+            color: #000;
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.8);
+            border-color: transparent;
+        }
+
+        .btn-primary:hover::before { transform: scaleX(1); }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: white;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            padding-top: 80px;
+        }
+        
+        .hero-content {
+            z-index: 2;
+            max-width: 1400px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .title-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 8rem;
+            font-weight: 900;
+            background: linear-gradient(180deg, #ffffff 0%, #00f3ff 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            filter: drop-shadow(0 0 30px rgba(0, 243, 255, 0.4));
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .hero p {
+            font-size: 1.4rem;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            color: #a0aec0;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+        
+        .cta-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .cta-buttons .btn {
+            width: 100%;
+            height: 60px;
+            font-size: 1.1rem;
+        }
+        
+        /* Premium Features Section */
+        .features {
+            padding: 8rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .features h2 {
+            text-align: center;
+            font-size: 3.5rem;
+            margin-bottom: 4rem;
+            font-weight: 800;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(188, 19, 254, 0.6);
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+        }
+        
+        .feature-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            padding: 3rem 2rem;
+            border-radius: 24px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(188, 19, 254, 0.5);
+            box-shadow: 0 20px 40px rgba(188, 19, 254, 0.15);
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+        
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+            display: inline-block;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .feature-card p {
+            color: #a0aec0;
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+        
+        /* Glass Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+        }
+        
+        .modal-content {
+            background: rgba(15, 15, 25, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            margin: 10% auto;
+            padding: 3rem;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 450px;
+            border: 1px solid rgba(0, 243, 255, 0.4);
+            box-shadow: 0 0 50px rgba(0, 243, 255, 0.15);
+            position: relative;
+            transform: scale(0.9);
+            animation: modalPop 0.3s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes modalPop { 100% { transform: scale(1); } }
+        
+        .modal-content h2 {
+            color: #fff;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: #a0aec0;
+            font-size: 32px;
+            font-weight: 300;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .close:hover {
+            color: var(--neon-blue);
+            transform: rotate(90deg);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #a0aec0;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+            background: rgba(0, 243, 255, 0.05);
+        }
+        
+        @media (max-width: 1024px) {
+            .hero h1 { font-size: 6rem; }
+            .nav-content {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                background: transparent;
+                padding-top: 1rem;
+            }
+            .nav-content.active {
+                display: flex;
+            }
+            .nav-links { 
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+            .hamburger { display: block; }
+            .auth-buttons { 
+                display: flex; 
+                flex-direction: column; 
+                width: 100%; 
+            }
+            #userInfo {
+                flex-direction: column;
+                width: 100%;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 0.8rem 1.5rem; }
+            .hero h1 { font-size: 4rem; }
+            .hero p { font-size: 1.1rem; }
+            .features h2 { font-size: 2.5rem; }
+            .auth-buttons .btn { padding: 0.5rem 1rem; font-size: 0.9rem; }
+        }
+
+        /* Preloader Launch Sequence */
+        .launch-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--space-dark);
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 1.5s ease-in-out;
+            overflow: hidden;
+        }
+        
+        .launch-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spaceship {
+            width: 150px;
+            height: auto;
+            position: relative;
+            z-index: 2;
+            transition: transform 3s cubic-bezier(0.5, 0, 0.2, 1);
+            filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.3));
+        }
+
+        .spaceship.launching {
+            transform: translateY(-150vh);
+        }
+
+        .spaceship svg { width: 100%; height: 100%; display: block; }
+
+        .smoke-container {
+            position: absolute;
+            bottom: -20vh;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200vw;
+            height: 10vh;
+            background: transparent;
+            z-index: 1;
+            opacity: 0;
+            transition: all 2.5s ease-out;
+            pointer-events: none;
+        }
+
+        .smoke-container.igniting {
+            opacity: 1;
+            bottom: -80vh;
+            height: 180vh;
+            background: radial-gradient(ellipse at center, rgba(230,230,250,1) 0%, rgba(200,200,220,0.9) 30%, rgba(150,150,180,0.6) 60%, transparent 100%);
+            filter: blur(50px);
+        }
+
+        .ignition-glow {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #ffb703, #ff4d4d, transparent);
+            border-radius: 50%;
+            opacity: 0;
+            z-index: 0;
+            transition: opacity 0.5s ease;
+            box-shadow: 0 0 60px 30px rgba(255, 183, 3, 0.8);
+        }
+
+        .spaceship.launching .ignition-glow {
+            opacity: 1;
+            animation: flicker 0.1s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1); opacity: 0.8; }
+            100% { transform: translateX(-50%) scale(1.3); opacity: 1; }
+        }
+        
+        /* Stop scroll while launch overlay is visible */
+        body.launch-active {
+            overflow: hidden;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="launch-active">
+    <div id="launchOverlay" class="launch-overlay">
+        <div id="spaceshipWrapper" class="spaceship">
+            <svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="rocketBodyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#ffffff"/>
+                        <stop offset="50%" stop-color="#e2e8f0"/>
+                        <stop offset="100%" stop-color="#cbd5e1"/>
+                    </linearGradient>
+                    <linearGradient id="rocketWindowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#00f3ff"/>
+                        <stop offset="100%" stop-color="#005b99"/>
+                    </linearGradient>
+                </defs>
+                <path d="M50 10 C35 40 30 70 30 100 L70 100 C70 70 65 40 50 10 Z" fill="#ff4d4d"/>
+                <path d="M30 100 L70 100 L75 160 L25 160 Z" fill="url(#rocketBodyGrad)"/>
+                <circle cx="50" cy="80" r="14" fill="#cbd5e1"/>
+                <circle cx="50" cy="80" r="10" fill="url(#rocketWindowGrad)" stroke="#1a1a3a" stroke-width="2"/>
+                <path d="M25 160 L0 190 L25 180 Z" fill="#ff4d4d"/>
+                <path d="M75 160 L100 190 L75 180 Z" fill="#ff4d4d"/>
+                <path d="M45 160 L50 190 L55 160 Z" fill="#b91c1c"/>
+                <path d="M35 160 L65 160 L60 170 L40 170 Z" fill="#475569"/>
+            </svg>
+            <div class="ignition-glow"></div>
+        </div>
+        <div id="smokeContainer" class="smoke-container"></div>
+    </div>
+    <div class="cosmic-background"></div>
+    <div class="starfield"></div>
+
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <div class="logo-planet"></div>
+                <div class="logo-ring"></div>
+            </div>
+            <span>Spaceverse</span>
+        </div>
+        <div class="nav-content" id="navContent">
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="/space-traffic-simulator">Space Traffic Simulator</a></li>
+                <li><a href="/community-scenarios">Community</a></li>
+                <li><a href="/reviews">Reviews</a></li>
+            </ul>
+            <div class="auth-buttons" id="authButtons">
+                <button class="btn btn-secondary" onclick="openModal('loginModal')">Login</button>
+                <button class="btn btn-primary" onclick="openModal('registerModal')">Sign Up</button>
+            </div>
+            <div class="user-info" id="userInfo" style="display: none;">
+                <span id="welcomeText"></span>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">☰</button>
+    </nav>
+
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="title-container">
+                <h1>Welcome to Spaceverse</h1>
+            </div>
+            <p>Embark on an incredible journey through our solar system. Explore planets in stunning 3D, take interactive quizzes, and discover the wonders of deep space like never before.</p>
+            <div class="cta-buttons">
+                <a href="/solar-system" id="exploreLink" class="btn btn-primary">🌌 Explore Solar System</a>
+                <a href="/vr-solar-system" id="vrLink" class="btn btn-primary">🥽 VR Solar System</a>
+                <a href="/space-traffic-simulator" id="simulateLink" class="btn btn-primary">🚀 Space Traffic Simulator</a>
+                <a href="/mission-tracker" class="btn btn-secondary">🛰️ Mission Tracker</a>
+                <a href="/artemis-2" class="btn btn-secondary">🌙 Artemis 2</a>
+                <a href="/space-launches" class="btn btn-secondary">🎬 Launch Videos</a>
+                <a href="/astronomical-events" class="btn btn-secondary">🌌 Astro Events</a>
+                <a href="/community-scenarios" class="btn btn-secondary">👥 Community Scenarios</a>
+                <a href="/interstellar-launch" class="btn btn-primary">🚀 Interstellar Launch</a>
+                <button class="btn btn-primary" id="takeQuizBtn">🧠 Take Quiz</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <h2>Amazing Features</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🌍</div>
+                <h3>3D Planet Models</h3>
+                <p>Explore detailed 3D models of all planets with realistic textures and accurate orbital mechanics.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h3>Orbital Mechanics</h3>
+                <p>Watch planets orbit the sun and rotate on their axes with scientifically accurate speeds and distances.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>Quiz Bot</h3>
+                <p>Test your knowledge with our intelligent quiz system featuring questions about each planet.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👤</div>
+                <h3>User Accounts</h3>
+                <p>Create your account to track quiz scores and save your exploration progress in the cloud.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3>Space Traffic Simulator</h3>
+                <p>Create hypothetical space scenarios and visualize their impact on orbital congestion and collision risk with our AI-powered simulator.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛰️</div>
+                <h3>Mission Tracker</h3>
+                <p>Track live space missions from agencies worldwide. View upcoming launches, active missions, and historical achievements with detailed information.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌙</div>
+                <h3>Artemis 2 Experience</h3>
+                <p>Dive deep into NASA's Artemis 2 mission with 3D visualization, cost breakdown, crew details, and links to official NASA resources.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎬</div>
+                <h3>Historic Launches</h3>
+                <p>Watch iconic rocket launches from NASA and ISRO on YouTube. Relive historic moments from Apollo 11 to Chandrayaan-3.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login to Spaceverse</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">Username / Callsign:</label>
+                    <input type="text" id="loginUsername" placeholder="Enter your callsign" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Access Code:</label>
+                    <input type="password" id="loginPassword" placeholder="Enter access code" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Authenticate</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Join Spaceverse</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerUsername">Callsign (Username):</label>
+                    <input type="text" id="registerUsername" placeholder="Create a callsign" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Comm-Link (Email):</label>
+                    <input type="email" id="registerEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Access Code (Password):</label>
+                    <input type="password" id="registerPassword" placeholder="Create access code" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Initialize Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Helper: configure links/buttons that require authentication
+        function setupAuthLinks(user) {
+            const explore = document.getElementById('exploreLink');
+            const simulate = document.getElementById('simulateLink');
+            const takeQuizBtn = document.getElementById('takeQuizBtn');
+            
+            if (explore) {
+                if (user && user.loggedIn) {
+                    explore.href = '/solar-system';
+                    explore.onclick = null;
+                } else {
+                    explore.href = '#';
+                    explore.onclick = (e) => { e.preventDefault(); openModal('loginModal'); };
+                }
+            }
+
+            if (simulate) {
+                if (user && user.loggedIn) {
+                    simulate.href = '/space-traffic-simulator';
+                    simulate.onclick = null;
+                } else {
+                    simulate.href = '#';
+                    simulate.onclick = (e) => { e.preventDefault(); openModal('loginModal'); };
+                }
+            }
+
+            if (takeQuizBtn) {
+                if (user && user.loggedIn) {
+                    takeQuizBtn.onclick = () => { window.location.href = '/quiz'; };
+                } else {
+                    takeQuizBtn.onclick = () => { openModal('loginModal'); };
+                }
+            }
+        }
+
+        // Hamburger menu toggle
+        document.getElementById('hamburgerBtn').addEventListener('click', function() {
+            document.getElementById('navContent').classList.toggle('active');
+        });
+        // CSS handles starfield now
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Close buttons
+        document.querySelectorAll('.close').forEach(closeBtn => {
+            closeBtn.onclick = function() {
+                this.closest('.modal').style.display = 'none';
+            }
+        });
+
+        // Authentication functions
+        async function login(username, password) {
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateUIForLoggedInUser(data.username);
+                    closeModal('loginModal');
+                    // reconfigure auth links immediately
+                    setupAuthLinks({ loggedIn: true, username: data.username });
+                    alert('Login successful!');
+                } else {
+                    alert(data.error);
+                }
+            } catch (error) {
+                alert('Login failed. Please try again.');
+            }
+        }
+
+        async function register(username, email, password) {
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateUIForLoggedInUser(username);
+                    closeModal('registerModal');
+                    alert('Registration successful!');
+                } else {
+                    alert(data.error);
+                }
+            } catch (error) {
+                alert('Registration failed. Please try again.');
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+                updateUIForLoggedOutUser();
+                alert('Logged out successfully!');
+            } catch (error) {
+                alert('Logout failed.');
+            }
+        }
+
+        function updateUIForLoggedInUser(username) {
+            document.getElementById('authButtons').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'flex';
+            document.getElementById('welcomeText').textContent = `Welcome, ${username}!`;
+        }
+
+        function updateUIForLoggedOutUser() {
+            document.getElementById('authButtons').style.display = 'flex';
+            document.getElementById('userInfo').style.display = 'none';
+        }
+
+        // Form submissions
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            login(username, password);
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            register(username, email, password);
+        });
+
+        function startQuiz() {
+            window.location.href = '/quiz';
+        }
+
+        // Check if user is already logged in
+        async function checkAuthStatus() {
+            try {
+                const response = await fetch('/api/user');
+                const data = await response.json();
+                
+                if (data.loggedIn) {
+                    updateUIForLoggedInUser(data.username);
+                    setupAuthLinks({ loggedIn: true, username: data.username });
+                }
+            } catch (error) {
+                console.log('Not logged in');
+                setupAuthLinks({ loggedIn: false });
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthStatus();
+            
+            // Launch Sequence Logic
+            const overlay = document.getElementById('launchOverlay');
+            const spaceship = document.getElementById('spaceshipWrapper');
+            const smoke = document.getElementById('smokeContainer');
+            const body = document.body;
+            
+            let hasLaunched = false;
+
+            const triggerLaunch = () => {
+                if (hasLaunched) return;
+                hasLaunched = true;
+                
+                spaceship.classList.add('launching');
+                smoke.classList.add('igniting');
+                
+                // Allow scrolling after smoke fully develops (1.5s)
+                setTimeout(() => {
+                    body.classList.remove('launch-active');
+                }, 1500);
+                
+                // Fade out overlay after rocket is high up (2.5s)
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                    // Remove from DOM eventually
+                    setTimeout(() => overlay.remove(), 2000);
+                }, 2500);
+            };
+
+            // Trigger on scroll, touch, or keypress
+            window.addEventListener('wheel', triggerLaunch, { once: true });
+            window.addEventListener('touchmove', triggerLaunch, { once: true });
+            overlay.addEventListener('click', triggerLaunch, { once: true });
+            
+            // Auto-launch after 2 seconds if user does nothing
+            setTimeout(triggerLaunch, 2000);
+
+            window.addEventListener('keydown', (e) => {
+                if(e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === ' ' || e.key === 'Enter') {
+                    triggerLaunch();
+                }
+            });
+        });
+    </script>
+    <script src="/public/js/chat-widget.js" defer></script>

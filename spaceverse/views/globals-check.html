@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Globals Check</title>
+</head>
+<body>
+    <h1>Globals Check</h1>
+    <div id="output"></div>
+    
+    <!-- Load libraries in order -->
+    <script src="https://unpkg.com/three@0.182.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@react-three/fiber@9.4.2/dist/react-three-fiber.umd.js"></script>
+    <script src="https://unpkg.com/@react-three/xr@6.6.28/dist/react-three-xr.umd.js"></script>
+    
+    <script>
+        function checkGlobals() {
+            const output = document.getElementById('output');
+            let html = '<h2>Available Globals:</h2>';
+            
+            // Check basic globals
+            html += `<p>THREE: ${typeof window.THREE !== 'undefined' ? '✅ Available' : '❌ Not available'}</p>`;
+            html += `<p>React: ${typeof window.React !== 'undefined' ? '✅ Available' : '❌ Not available'}</p>`;
+            html += `<p>ReactDOM: ${typeof window.ReactDOM !== 'undefined' ? '✅ Available' : '❌ Not available'}</p>`;
+            
+            // Check for ReactThreeFiber
+            if (typeof window.ReactThreeFiber !== 'undefined') {
+                html += `<p>ReactThreeFiber: ✅ Available</p>`;
+                html += `<p>ReactThreeFiber keys: ${Object.keys(window.ReactThreeFiber).slice(0, 10).join(', ')}</p>`;
+            } else {
+                // Check alternative names
+                const fiberKeys = Object.keys(window).filter(key => key.toLowerCase().includes('fiber'));
+                html += `<p>ReactThreeFiber: ❌ Not available</p>`;
+                if (fiberKeys.length > 0) {
+                    html += `<p>Possible Fiber keys: ${fiberKeys.join(', ')}</p>`;
+                }
+            }
+            
+            // Check for ReactThreeXR
+            if (typeof window.ReactThreeXR !== 'undefined') {
+                html += `<p>ReactThreeXR: ✅ Available</p>`;
+                html += `<p>ReactThreeXR keys: ${Object.keys(window.ReactThreeXR).slice(0, 10).join(', ')}</p>`;
+            } else {
+                // Check alternative names
+                const xrKeys = Object.keys(window).filter(key => key.toLowerCase().includes('xr'));
+                html += `<p>ReactThreeXR: ❌ Not available</p>`;
+                if (xrKeys.length > 0) {
+                    html += `<p>Possible XR keys: ${xrKeys.join(', ')}</p>`;
+                }
+            }
+            
+            output.innerHTML = html;
+        }
+        
+        // Wait a bit for all scripts to load
+        setTimeout(checkGlobals, 2000);
+    </script>
+</body>
+</html>

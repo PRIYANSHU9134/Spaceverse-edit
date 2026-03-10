@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artemis 2 Mission - Complete Information</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --space-dark: #050510;
+            --space-light: #1a1a3a;
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-amber: #ffb703;
+            --glass-bg: rgba(20, 20, 40, 0.4);
+            --glass-border: rgba(0, 243, 255, 0.3);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            --text-main: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--space-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .cosmic-background {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -2;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(188, 19, 254, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(255, 183, 3, 0.1) 0%, transparent 40%);
+        }
+        
+        .starfield {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0));
+            background-size: 550px 450px;
+        }
+
+        .back-home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 183, 3, 0.9);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1000;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .back-home-btn:hover {
+            background: #ffb703;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 183, 3, 0.4);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 2rem 50px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .mission-logo {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            color: #64FFDA;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(100, 255, 218, 0.5);
+        }
+
+        .header .subtitle {
+            font-size: 1.5rem;
+            color: #ffb703;
+            margin-bottom: 1rem;
+        }
+
+        .mission-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, #ff9800, #ff5722);
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .section {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: var(--glass-shadow);
+        }
+
+        .section h2 {
+            color: #64FFDA;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 2px solid #64FFDA;
+            padding-bottom: 0.75rem;
+        }
+
+        .section h3 {
+            color: #ffb703;
+            margin: 1.5rem 0 1rem;
+            font-size: 1.4rem;
+        }
+
+        .section p {
+            margin-bottom: 1rem;
+            color: rgba(230, 241, 255, 0.9);
+            font-size: 1.05rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .info-card {
+            background: rgba(0, 243, 255, 0.05);
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--neon-blue);
+            border: 1px solid var(--glass-border);
+        }
+
+        .info-label {
+            color: #9ca3af;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            color: #E6F1FF;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .cost-breakdown {
+            background: rgba(255, 183, 3, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cost-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            color: #ffb703;
+            font-size: 1.1rem;
+        }
+
+        .cost-label {
+            color: rgba(230, 241, 255, 0.9);
+        }
+
+        .cost-value {
+            color: #4caf50;
+            font-weight: 600;
+        }
+
+        .crew-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .crew-card {
+            background: linear-gradient(135deg, rgba(100, 255, 218, 0.1), rgba(148, 87, 235, 0.1));
+            padding: 1.25rem;
+            border-radius: 10px;
+            border: 1px solid #64FFDA;
+            text-align: center;
+        }
+
+        .crew-card .name {
+            color: #64FFDA;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .crew-card .role {
+            color: #ffb703;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .crew-card .country {
+            color: rgba(230, 241, 255, 0.7);
+            font-size: 0.85rem;
+        }
+
+        .objectives-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .objectives-list li {
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: rgba(100, 255, 218, 0.05);
+            border-left: 4px solid #64FFDA;
+            border-radius: 5px;
+        }
+
+        .objectives-list li::before {
+            content: "✓";
+            color: #4caf50;
+            font-weight: bold;
+            margin-right: 0.75rem;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding: 1rem 0 1rem 1.5rem;
+            border-left: 2px solid #64FFDA;
+        }
+
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -6px;
+            top: 1.2rem;
+            width: 12px;
+            height: 12px;
+            background: #64FFDA;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.7);
+        }
+
+        .timeline-time {
+            color: #ffb703;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-desc {
+            color: rgba(230, 241, 255, 0.9);
+        }
+
+        .official-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .link-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #9457EB, #64FFDA);
+            border-radius: 10px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+
+        .link-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(100, 255, 218, 0.4);
+        }
+
+        .specifications {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .spec-item {
+            background: rgba(148, 87, 235, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(148, 87, 235, 0.3);
+        }
+
+        .spec-label {
+            color: #9ca3af;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .spec-value {
+            color: #E6F1FF;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 60px 1rem 30px;
+            }
+
+            .info-grid, .crew-grid, .specifications {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cosmic-background"></div>
+    <div class="starfield"></div>
+    
+    <a href="/" class="back-home-btn">
+        <span>🏠</span>
+        <span>Back to Home</span>
+    </a>
+
+    <div class="container">
+        <div class="header">
+            <div class="mission-logo">🚀</div>
+            <h1>ARTEMIS II</h1>
+            <p class="subtitle">First Crewed Mission to the Moon in Over 50 Years</p>
+            <span class="mission-badge">🔴 CREWED MISSION</span>
+        </div>
+
+        <div class="content-grid">
+            <!-- Mission Overview -->
+            <div class="section">
+                <h2>📋 Mission Overview</h2>
+                <p>
+                    Artemis II is NASA's first crewed mission as part of the Artemis program, marking humanity's return to lunar exploration after the Apollo era. This historic mission will send four astronauts on a journey around the Moon, testing all systems and procedures necessary for future lunar landings.
+                </p>
+                <p>
+                    Unlike Artemis I which was uncrewed, Artemis II will carry astronauts aboard the Orion spacecraft, performing a lunar flyby before returning to Earth. This mission is crucial for validating the capabilities of the Space Launch System (SLS) and Orion with crew aboard, paving the way for Artemis III's lunar landing mission.
+                </p>
+
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-label">Launch Date</div>
+                        <div class="info-value">September 2025</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Duration</div>
+                        <div class="info-value">~10 Days</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Crew Size</div>
+                        <div class="info-value">4 Astronauts</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Launch Vehicle</div>
+                        <div class="info-value">SLS Block 1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mission Crew -->
+            <div class="section">
+                <h2>👨‍🚀 Mission Crew</h2>
+                <p>The Artemis II crew represents the most diverse group of astronauts ever assigned to a lunar mission:</p>
+                
+                <div class="crew-grid">
+                    <div class="crew-card">
+                        <div class="name">Reid Wiseman</div>
+                        <div class="role">Commander</div>
+                        <div class="country">🇺🇸 NASA</div>
+                    </div>
+                    <div class="crew-card">
+                        <div class="name">Victor Glover</div>
+                        <div class="role">Pilot</div>
+                        <div class="country">🇺🇸 NASA</div>
+                    </div>
+                    <div class="crew-card">
+                        <div class="name">Christina Koch</div>
+                        <div class="role">Mission Specialist</div>
+                        <div class="country">🇺🇸 NASA</div>
+                    </div>
+                    <div class="crew-card">
+                        <div class="name">Jeremy Hansen</div>
+                        <div class="role">Mission Specialist</div>
+                        <div class="country">🇨🇦 CSA</div>
+                    </div>
+                </div>
+
+                <p style="margin-top: 1.5rem;">
+                    <strong>Historic Firsts:</strong> Victor Glover will be the first person of color to travel to the Moon. Christina Koch will be the first woman to fly on a lunar mission. Jeremy Hansen will be the first Canadian astronaut to venture to deep space.
+                </p>
+            </div>
+
+            <!-- Mission Objectives -->
+            <div class="section">
+                <h2>🎯 Mission Objectives</h2>
+                <ul class="objectives-list">
+                    <li>Test the Orion spacecraft's life support systems with crew aboard in deep space</li>
+                    <li>Validate critical systems including navigation, communications, and power generation</li>
+                    <li>Perform trajectory maneuvers including trans-lunar injection and lunar flyby</li>
+                    <li>Test crew interfaces and habitability during extended spaceflight</li>
+                    <li>Conduct scientific observations and data collection during lunar flyby</li>
+                    <li>Validate heat shield performance during high-speed Earth reentry</li>
+                    <li>Demonstrate recovery operations for crewed Orion capsule</li>
+                    <li>Prepare crew and systems for Artemis III lunar landing mission</li>
+                </ul>
+            </div>
+
+            <!-- Cost Breakdown -->
+            <div class="section">
+                <h2>💰 Program Cost Breakdown</h2>
+                <p>The Artemis program represents a significant investment in America's space exploration capabilities:</p>
+                
+                <div class="cost-breakdown">
+                    <div class="cost-item">
+                        <span class="cost-label">Space Launch System (SLS) Development</span>
+                        <span class="cost-value">$23.8 Billion</span>
+                    </div>
+                    <div class="cost-item">
+                        <span class="cost-label">Orion Spacecraft Development</span>
+                        <span class="cost-value">$20.4 Billion</span>
+                    </div>
+                    <div class="cost-item">
+                        <span class="cost-label">Ground Systems & Launch Facilities</span>
+                        <span class="cost-value">$8.7 Billion</span>
+                    </div>
+                    <div class="cost-item">
+                        <span class="cost-label">Human Landing System (HLS)</span>
+                        <span class="cost-value">$4.2 Billion</span>
+                    </div>
+                    <div class="cost-item">
+                        <span class="cost-label">Artemis II Mission Operations</span>
+                        <span class="cost-value">$1.5 Billion</span>
+                    </div>
+                    <div class="cost-item">
+                        <span class="cost-label">Lunar Gateway & Other Infrastructure</span>
+                        <span class="cost-value">$34.4 Billion</span>
+                    </div>
+                    <div class="cost-item">
+                        <span class="cost-label">Total Artemis Program Cost (2012-2025)</span>
+                        <span class="cost-value">$93 Billion</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mission Timeline -->
+            <div class="section">
+                <h2>⏱️ Mission Timeline</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-time">T-0:00:00 - Launch</div>
+                        <div class="timeline-desc">SLS lifts off from Kennedy Space Center LC-39B</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">T+0:08:00 - Solid Rocket Boosters Separation</div>
+                        <div class="timeline-desc">Twin solid rocket boosters separate after fuel depletion</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">T+0:15:00 - Core Stage Separation</div>
+                        <div class="timeline-desc">Core stage separates, ICPS upper stage takes over</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">T+2:00:00 - Trans-Lunar Injection</div>
+                        <div class="timeline-desc">Upper stage burn sends Orion toward the Moon</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">Day 4 - Lunar Flyby</div>
+                        <div class="timeline-desc">Closest approach to Moon (~7,400 km), crew views lunar surface</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">Day 10 - Earth Reentry</div>
+                        <div class="timeline-desc">Orion reenters Earth's atmosphere at 40,000 km/h</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">Day 10 - Splashdown</div>
+                        <div class="timeline-desc">Parachute landing in Pacific Ocean, crew recovery</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Specifications -->
+            <div class="section">
+                <h2>🔧 Technical Specifications</h2>
+                
+                <h3>Space Launch System (SLS)</h3>
+                <div class="specifications">
+                    <div class="spec-item">
+                        <div class="spec-label">Height</div>
+                        <div class="spec-value">98 meters</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Thrust</div>
+                        <div class="spec-value">8.8 million lbs</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Payload to TLI</div>
+                        <div class="spec-value">27 metric tons</div>
+                    </div>
+                </div>
+
+                <h3>Orion Spacecraft</h3>
+                <div class="specifications">
+                    <div class="spec-item">
+                        <div class="spec-label">Crew Module Diameter</div>
+                        <div class="spec-value">5 meters</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Habitable Volume</div>
+                        <div class="spec-value">19.6 m³</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Service Module</div>
+                        <div class="spec-value">ESA-built</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Solar Array Power</div>
+                        <div class="spec-value">11.2 kW</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mission Significance -->
+            <div class="section">
+                <h2>🌟 Mission Significance</h2>
+                <p>
+                    Artemis II represents a pivotal moment in human space exploration. After decades of operating exclusively in low Earth orbit, this mission marks humanity's return to deep space exploration and sets the stage for a sustained lunar presence.
+                </p>
+                <p>
+                    <strong>Key Achievements:</strong>
+                </p>
+                <ul class="objectives-list">
+                    <li>First humans to travel beyond low Earth orbit since Apollo 17 in 1972</li>
+                    <li>Longest distance from Earth traveled by humans (~450,000 km during free return trajectory)</li>
+                    <li>First test of deep space life support systems with crew</li>
+                    <li>Critical stepping stone toward permanent lunar base and Mars missions</li>
+                    <li>International cooperation (NASA-CSA-ESA partnership)</li>
+                    <li>Advancement of commercial space industry partnerships</li>
+                </ul>
+            </div>
+
+            <!-- Official Resources -->
+            <div class="section">
+                <h2>🌐 Official Resources & Links</h2>
+                <div class="official-links">
+                    <a href="https://www.nasa.gov/artemis-2/" target="_blank" class="link-btn">
+                        <span>🚀</span>
+                        <span>Official NASA Artemis II Page</span>
+                    </a>
+                    <a href="https://www.nasa.gov/exploration/systems/sls/index.html" target="_blank" class="link-btn">
+                        <span>🔧</span>
+                        <span>Space Launch System Information</span>
+                    </a>
+                    <a href="https://www.nasa.gov/exploration/systems/orion/index.html" target="_blank" class="link-btn">
+                        <span>🛸</span>
+                        <span>Orion Spacecraft Details</span>
+                    </a>
+                    <a href="https://www.nasa.gov/artemis/" target="_blank" class="link-btn">
+                        <span>🌙</span>
+                        <span>Artemis Program Overview</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

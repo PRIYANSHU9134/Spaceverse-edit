@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Traffic Simulator - SpaceVerse</title>
+    <style>
+        :root {
+            --bg: #0D1117; /* Obsidian */
+            --text: #E6F1FF; /* Starlight White */
+            --accent: #64FFDA; /* Aqua Glow */
+            --accent2: #9457EB; /* Amethyst */
+            --panel-bg: rgba(13,17,23,0.6);
+            --muted: rgba(230,241,255,0.06);
+            --muted-strong: rgba(100,255,218,0.12);
+            --danger: #ff4d4d;
+            --warning: #ffcc00;
+            --success: #4caf50;
+            --card-bg: rgba(30, 30, 46, 0.7);
+            --hover-bg: rgba(100, 255, 218, 0.1);
+        }
+
+        body { 
+            margin: 0; 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffb703;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #ffb703;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(100, 255, 218, 0.06);
+            border: 2px solid #64FFDA;
+            color: #E6F1FF;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s;
+            z-index: 15;
+        }
+        
+        .back-btn:hover {
+            background: rgba(100, 255, 218, 0.14);
+            transform: translateY(-2px);
+            color: #0D1117;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 100px auto 40px;
+            padding: 0 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ffb703, #fb8500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px 0 rgba(100,255,218,0.04);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(148,87,235,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(100, 255, 218, 0.15);
+        }
+        
+        .panel-title {
+            font-size: 1.5rem;
+            margin-top: 0;
+            color: #64FFDA;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #64FFDA;
+            font-weight: 600;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(100, 255, 218, 0.3);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #64FFDA;
+            box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.3);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #64FFDA;
+            box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.2);
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .slider-value {
+            min-width: 50px;
+            text-align: center;
+            background: rgba(100, 255, 218, 0.1);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn:hover:before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #ffb703, #fb8500);
+            color: #000;
+            width: 100%;
+            font-size: 1.1rem;
+            padding: 15px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(255, 183, 3, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(255, 183, 3, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 183, 3, 0.3);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid #64FFDA;
+            margin-top: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(100, 255, 218, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(100, 255, 218, 0.2);
+        }
+        
+        .visualization {
+            height: 300px;
+            background: radial-gradient(circle at center, rgba(26, 117, 188, 0.2) 0%, rgba(0, 0, 0, 0.3) 70%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(100, 255, 218, 0.1);
+        }
+        
+        .earth {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle at 30% 30%, #1a75bc, #0a4a85);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 0 30px rgba(26, 117, 188, 0.7);
+            animation: rotate 60s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .orbit {
+            position: absolute;
+            border: 1px dashed rgba(100, 255, 218, 0.4);
+            border-radius: 50%;
+            animation: pulse 3s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            from { opacity: 0.4; }
+            to { opacity: 0.8; }
+        }
+        
+        .satellite {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #64FFDA;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #64FFDA, 0 0 30px #64FFDA;
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 10px #64FFDA; }
+            to { box-shadow: 0 0 20px #64FFDA, 0 0 30px #64FFDA; }
+        }
+        
+        .results-panel {
+            display: none;
+        }
+        
+        .result-card {
+            background: rgba(100, 255, 218, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .result-card:hover {
+            background: rgba(100, 255, 218, 0.08);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .result-title {
+            font-size: 1.2rem;
+            color: #64FFDA;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .metric {
+            text-align: center;
+            padding: 15px;
+            background: rgba(148, 87, 235, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(148, 87, 235, 0.2);
+        }
+        
+        .metric:hover {
+            transform: translateY(-5px);
+            background: rgba(148, 87, 235, 0.15);
+            box-shadow: 0 5px 15px rgba(148, 87, 235, 0.2);
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .risk-indicator {
+            height: 20px;
+            background: linear-gradient(to right, #4CAF50, #FFC107, #FF5722);
+            border-radius: 10px;
+            margin: 10px 0;
+            position: relative;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .risk-marker {
+            position: absolute;
+            top: -5px;
+            width: 10px;
+            height: 30px;
+            background: #fff;
+            border-radius: 5px;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+            transition: all 0.5s ease;
+        }
+        
+        .explanation {
+            background: rgba(255, 204, 0, 0.1);
+            border-left: 4px solid #ffcc00;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border-right: 1px solid rgba(255, 204, 0, 0.2);
+            border-top: 1px solid rgba(255, 204, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 204, 0, 0.2);
+        }
+        
+        .recommendations {
+            background: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border-right: 1px solid rgba(76, 175, 80, 0.2);
+            border-top: 1px solid rgba(76, 175, 80, 0.2);
+            border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+        }
+        
+        .gamification {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .score-card {
+            background: rgba(100, 255, 218, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+        }
+        
+        .score-card:hover {
+            transform: translateY(-5px);
+            background: rgba(100, 255, 218, 0.1);
+            box-shadow: 0 5px 15px rgba(100, 255, 218, 0.2);
+        }
+        
+        .score-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #64FFDA;
+            margin: 10px 0;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #64FFDA;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            display: none;
+            background: rgba(255, 77, 77, 0.1);
+            border-left: 4px solid var(--danger);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+            color: var(--danger);
+        }
+        
+        .success-message {
+            display: none;
+            background: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid var(--success);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+            color: var(--success);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <a href="/" class="back-btn">← Back to Home</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>What-If Space Traffic Simulator</h1>
+            <p>Create hypothetical space scenarios and visualize their impact on orbital congestion, collision risk, and sustainability</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="panel">
+                <h2 class="panel-title">Scenario Builder</h2>
+                
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+                
+                <div class="form-group">
+                    <label for="scenarioName">Scenario Name</label>
+                    <input type="text" id="scenarioName" class="form-control" placeholder="e.g., Starlink Launch #123">
+                </div>
+                
+                <div class="form-group">
+                    <label for="eventType">Event Type</label>
+                    <select id="eventType" class="form-control">
+                        <option value="launch">New Satellite Launch</option>
+                        <option value="adjustment">Orbit Adjustment</option>
+                        <option value="breakup">Satellite Breakup</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="altitude">Altitude: <span id="altitudeValue">500</span> km</label>
+                    <div class="slider-container">
+                        <input type="range" id="altitude" class="form-control" min="100" max="2000" value="500">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="inclination">Inclination: <span id="inclinationValue">45</span>°</label>
+                    <div class="slider-container">
+                        <input type="range" id="inclination" class="form-control" min="0" max="180" value="45">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="velocity">Velocity: <span id="velocityValue">7.8</span> km/s</label>
+                    <div class="slider-container">
+                        <input type="range" id="velocity" class="form-control" min="0" max="15" step="0.1" value="7.8">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mass">Mass: <span id="massValue">1000</span> kg</label>
+                    <div class="slider-container">
+                        <input type="range" id="mass" class="form-control" min="1" max="10000" value="1000">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="launchTime">Launch Time</label>
+                    <input type="datetime-local" id="launchTime" class="form-control">
+                </div>
+                
+                <div class="visualization">
+                    <div class="earth"></div>
+                    <div class="orbit" id="orbitPath" style="width: 250px; height: 250px;"></div>
+                    <div class="satellite" id="satellitePreview"></div>
+                </div>
+                
+                <button id="runSimulation" class="btn btn-primary">🚀 Run Simulation</button>
+                <button id="realTimePrediction" class="btn btn-secondary" style="margin-top: 10px;">🔮 Real-Time Prediction</button>
+                <button id="getRecommendations" class="btn btn-secondary" style="margin-top: 10px;">💡 Get Personalized Tips</button>
+                
+                <div class="loading" id="loadingIndicator">
+                    <div class="spinner"></div>
+                    <p>Running simulation and analyzing space traffic impact...</p>
+                </div>
+            </div>
+            
+            <div class="panel results-panel" id="resultsPanel">
+                <h2 class="panel-title">Simulation Results</h2>
+                
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value" id="collisionRisk">0%</div>
+                        <div class="metric-label">Collision Risk</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="congestionIncrease">0%</div>
+                        <div class="metric-label">Congestion Increase</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="debrisProbability">0%</div>
+                        <div class="metric-label">Debris Probability</div>
+                    </div>
+                </div>
+                
+                <div class="result-card">
+                    <h3 class="result-title">Risk Assessment</h3>
+                    <div class="risk-indicator">
+                        <div class="risk-marker" id="riskMarker"></div>
+                    </div>
+                    <p>Risk Level: <strong id="riskLevel">Low</strong></p>
+                </div>
+                
+                <div class="result-card">
+                    <h3 class="result-title">Before vs After Comparison</h3>
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-value" id="beforeObjects">0</div>
+                            <div class="metric-label">Objects in LEO (Before)</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="afterObjects">0</div>
+                            <div class="metric-label">Objects in LEO (After)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="explanation" id="aiExplanation">
+                    <h3>AI Analysis</h3>
+                    <p id="explanationText">Run a simulation to see AI-powered analysis of the space traffic impact.</p>
+                </div>
+                
+                <div class="recommendations" id="recommendationsSection">
+                    <h3>Recommendations</h3>
+                    <ul id="recommendationsList"></ul>
+                </div>
+                
+                <div class="result-card">
+                    <h3 class="result-title">Your Performance</h3>
+                    <div class="gamification">
+                        <div class="score-card">
+                            <div>Safety Score</div>
+                            <div class="score-value" id="safetyScore">0</div>
+                        </div>
+                        <div class="score-card">
+                            <div>Sustainability</div>
+                            <div class="score-value" id="sustainabilityScore">0</div>
+                        </div>
+                        <div class="score-card">
+                            <div>Efficiency</div>
+                            <div class="score-value" id="efficiencyScore">0</div>
+                        </div>
+                    </div>
+                    <p>Level: <strong id="userLevel">Space Explorer</strong></p>
+                </div>
+                
+                <button id="newScenario" class="btn btn-secondary">Create New Scenario</button>
+                <button id="shareScenario" class="btn btn-secondary" style="margin-top: 15px; display: block; text-align: center;">📤 Share with Community</button>
+                <a href="/space-traffic-visualization" class="btn btn-primary" style="margin-top: 15px; display: block; text-align: center;">View 3D Visualization</a>
+                <a href="/community-scenarios" class="btn btn-secondary" style="margin-top: 15px; display: block; text-align: center;">👥 Community Scenarios</a>
+            </div>
+            
+            <div class="panel">
+                <h2 class="panel-title">Leaderboard</h2>
+                <div id="leaderboardContent">
+                    <p>Loading leaderboard...</p>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2 class="panel-title">Real-Time Space Data</h2>
+                <div id="nasaDataContent">
+                    <p>Loading real-time space data...</p>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2 class="panel-title">Space Chatbot</h2>
+                <div class="form-group">
+                    <label for="chatbotQuestion">Ask me anything about space:</label>
+                    <textarea id="chatbotQuestion" class="form-control" placeholder="e.g., What is a black hole?" rows="3"></textarea>
+                </div>
+                <button id="askChatbot" class="btn btn-primary">Ask Question</button>
+                
+                <div class="loading" id="chatbotLoading">
+                    <div class="spinner"></div>
+                    <p>Thinking...</p>
+                </div>
+                
+                <div class="result-card" id="chatbotResponse" style="display: none; margin-top: 20px;">
+                    <h3>Response</h3>
+                    <div id="chatbotAnswer"></div>
+                </div>
+            </div>        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const altitudeSlider = document.getElementById('altitude');
+        const inclinationSlider = document.getElementById('inclination');
+        const velocitySlider = document.getElementById('velocity');
+        const massSlider = document.getElementById('mass');
+        const altitudeValue = document.getElementById('altitudeValue');
+        const inclinationValue = document.getElementById('inclinationValue');
+        const velocityValue = document.getElementById('velocityValue');
+        const massValue = document.getElementById('massValue');
+        const runSimulationBtn = document.getElementById('runSimulation');
+        const realTimePredictionBtn = document.getElementById('realTimePrediction');
+        const getRecommendationsBtn = document.getElementById('getRecommendations');
+        const newScenarioBtn = document.getElementById('newScenario');
+        const shareScenarioBtn = document.getElementById('shareScenario');
+        const resultsPanel = document.getElementById('resultsPanel');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const satellitePreview = document.getElementById('satellitePreview');
+        const orbitPath = document.getElementById('orbitPath');
+        
+        // Update slider values
+        altitudeSlider.addEventListener('input', () => {
+            altitudeValue.textContent = altitudeSlider.value;
+            updateSatellitePosition();
+        });
+        
+        inclinationSlider.addEventListener('input', () => {
+            inclinationValue.textContent = inclinationSlider.value;
+            updateSatellitePosition();
+        });
+        
+        velocitySlider.addEventListener('input', () => {
+            velocityValue.textContent = velocitySlider.value;
+        });
+        
+        massSlider.addEventListener('input', () => {
+            massValue.textContent = massSlider.value;
+        });
+        
+        // Update satellite position preview
+        function updateSatellitePosition() {
+            const altitude = parseInt(altitudeSlider.value);
+            const inclination = parseInt(inclinationSlider.value);
+            
+            // Calculate position based on altitude and inclination
+            // This is a simplified visualization
+            const radius = 100 + (altitude / 2000) * 100; // Scale radius based on altitude
+            const angle = (inclination / 180) * Math.PI; // Convert inclination to radians
+            
+            // Position satellite in orbit
+            const x = 150 + radius * Math.cos(angle) - 10; // Center in container minus half satellite size
+            const y = 150 + radius * Math.sin(angle) - 10;
+            
+            satellitePreview.style.left = `${x}px`;
+            satellitePreview.style.top = `${y}px`;
+            
+            // Update orbit path size
+            const orbitSize = radius * 2;
+            orbitPath.style.width = `${orbitSize}px`;
+            orbitPath.style.height = `${orbitSize}px`;
+            orbitPath.style.left = `${150 - radius}px`;
+            orbitPath.style.top = `${150 - radius}px`;
+        }
+        
+        // Initialize satellite position
+        updateSatellitePosition();
+        
+        // Set default launch time to now
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('launchTime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        
+        // Run simulation
+        runSimulationBtn.addEventListener('click', async () => {
+            await runSimulation();
+        });
+        
+        // Real-time prediction
+        realTimePredictionBtn.addEventListener('click', async () => {
+            await getRealTimePrediction();
+        });
+        
+        // Get personalized recommendations
+        getRecommendationsBtn.addEventListener('click', async () => {
+            await getPersonalizedRecommendations();
+        });
+        
+        // Share scenario
+        shareScenarioBtn.addEventListener('click', async () => {
+            await shareCurrentScenario();
+        });
+        
+        async function runSimulation() {
+            // Hide previous messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Validate inputs
+            const scenarioName = document.getElementById('scenarioName').value.trim();
+            if (!scenarioName) {
+                showError('Please enter a scenario name');
+                return;
+            }
+            
+            // Show loading indicator
+            loadingIndicator.style.display = 'block';
+            runSimulationBtn.disabled = true;
+            
+            try {
+                // Collect scenario parameters
+                const scenarioData = {
+                    scenarioName: scenarioName,
+                    eventType: document.getElementById('eventType').value,
+                    parameters: {
+                        altitude: parseInt(altitudeSlider.value),
+                        inclination: parseInt(inclinationSlider.value),
+                        velocity: parseFloat(velocitySlider.value),
+                        mass: parseInt(massSlider.value),
+                        launchTime: document.getElementById('launchTime').value
+                    }
+                };
+                
+                // Call the actual backend API
+                const response = await fetch('/api/simulator/run', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(scenarioData),
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'Simulation failed');
+                }
+                
+                // Display results
+                displayResults(data);
+                
+                // Show success message
+                showSuccess('Simulation completed successfully!');
+            } catch (error) {
+                console.error('Simulation error:', error);
+                showError('Failed to run simulation. Please try again.');
+            } finally {
+                // Hide loading indicator
+                loadingIndicator.style.display = 'none';
+                runSimulationBtn.disabled = false;
+                realTimePredictionBtn.disabled = false;
+                getRecommendationsBtn.disabled = false;
+            }
+        }
+        
+        // Display simulation results
+        function displayResults(data) {
+            // Update metrics
+            document.getElementById('collisionRisk').textContent = data.aiAnalysis.collisionRiskPercentage.toFixed(1) + '%';
+            document.getElementById('congestionIncrease').textContent = data.aiAnalysis.orbitalCongestionIncrease.toFixed(1) + '%';
+            document.getElementById('debrisProbability').textContent = data.aiAnalysis.secondaryDebrisProbability.toFixed(1) + '%';
+            
+            // Update risk level and marker
+            const riskLevel = data.aiAnalysis.collisionRiskPercentage;
+            let riskText = 'Low';
+            if (riskLevel > 70) riskText = 'High';
+            else if (riskLevel > 40) riskText = 'Medium';
+            
+            document.getElementById('riskLevel').textContent = riskText;
+            
+            // Position risk marker
+            const markerPosition = (riskLevel / 100) * 100;
+            document.getElementById('riskMarker').style.left = `${markerPosition}%`;
+            
+            // Update before/after comparison
+            document.getElementById('beforeObjects').textContent = data.results.beforeState.objectsInLEO;
+            document.getElementById('afterObjects').textContent = data.results.afterState.objectsInLEO;
+            
+            // Update AI explanation
+            document.getElementById('explanationText').textContent = data.aiAnalysis.explanation;
+            
+            // Update recommendations
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = '';
+            if (data.aiAnalysis.recommendations && data.aiAnalysis.recommendations.length > 0) {
+                data.aiAnalysis.recommendations.forEach(rec => {
+                    const li = document.createElement('li');
+                    li.textContent = rec;
+                    recommendationsList.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'No specific recommendations at this time.';
+                recommendationsList.appendChild(li);
+            }
+            
+            // Update gamification scores
+            if (data.gamification && data.gamification.scores) {
+                document.getElementById('safetyScore').textContent = data.gamification.scores.safetyScore;
+                document.getElementById('sustainabilityScore').textContent = data.gamification.scores.sustainabilityScore;
+                document.getElementById('efficiencyScore').textContent = data.gamification.scores.efficiencyScore;
+                document.getElementById('userLevel').textContent = data.gamification.level;
+            }
+            
+            // Show results panel
+            resultsPanel.style.display = 'block';
+            
+            // Refresh leaderboard
+            fetchLeaderboard();
+            
+            // Scroll to results
+            resultsPanel.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Create new scenario
+        newScenarioBtn.addEventListener('click', () => {
+            resultsPanel.style.display = 'none';
+            document.getElementById('scenarioName').value = '';
+            document.getElementById('eventType').value = 'launch';
+            altitudeSlider.value = 500;
+            inclinationSlider.value = 45;
+            velocitySlider.value = 7.8;
+            massSlider.value = 1000;
+            altitudeValue.textContent = '500';
+            inclinationValue.textContent = '45';
+            velocityValue.textContent = '7.8';
+            massValue.textContent = '1000';
+            updateSatellitePosition();
+            
+            // Reset launch time
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('launchTime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        });
+        
+        // Show error message
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+        
+        // Show success message
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        }
+        
+        // Get real-time prediction
+        async function getRealTimePrediction() {
+            // Hide previous messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Show loading indicator
+            loadingIndicator.style.display = 'block';
+            realTimePredictionBtn.disabled = true;
+            
+            try {
+                // Collect current state
+                const currentState = {
+                    objectsInLEO: parseInt(document.getElementById('afterObjects').textContent) || 3000,
+                    objectsInMEO: 500,
+                    objectsInGEO: 2000,
+                    averageCongestion: parseFloat(document.getElementById('congestionIncrease').textContent) || 0.5,
+                    collisionProbability: parseFloat(document.getElementById('collisionRisk').textContent) || 0.01
+                };
+                
+                // Collect scenario parameters
+                const parameters = {
+                    altitude: parseInt(altitudeSlider.value),
+                    inclination: parseInt(inclinationSlider.value),
+                    velocity: parseFloat(velocitySlider.value),
+                    mass: parseInt(massSlider.value),
+                    launchTime: document.getElementById('launchTime').value
+                };
+                
+                // Get environmental factors (placeholder)
+                const environmentalFactors = {
+                    geomagnetic_storm_severity: 3,
+                    solar_radiation_level: 5,
+                    near_earth_objects: 2
+                };
+                
+                // Call the real-time prediction API
+                const response = await fetch('/api/simulator/real-time-prediction', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        parameters,
+                        currentState,
+                        environmentalFactors,
+                        timeHorizon: 24
+                    }),
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'Prediction failed');
+                }
+                
+                // Display real-time prediction results
+                displayRealTimePrediction(data.aiAnalysis);
+                
+                // Show success message
+                showSuccess('Real-time prediction completed successfully!');
+            } catch (error) {
+                console.error('Prediction error:', error);
+                showError('Failed to get real-time prediction. Please try again.');
+            } finally {
+                // Hide loading indicator
+                loadingIndicator.style.display = 'none';
+                realTimePredictionBtn.disabled = false;
+            }
+        }
+        
+        // Display real-time prediction results
+        function displayRealTimePrediction(data) {
+            // Update metrics
+            document.getElementById('collisionRisk').textContent = data.collisionRiskPercentage.toFixed(1) + '%';
+            document.getElementById('congestionIncrease').textContent = data.orbitalCongestionIncrease.toFixed(1) + '%';
+            document.getElementById('debrisProbability').textContent = data.secondaryDebrisProbability.toFixed(1) + '%';
+            
+            // Update risk level and marker
+            const riskLevel = data.collisionRiskPercentage;
+            let riskText = 'Low';
+            if (riskLevel > 70) riskText = 'High';
+            else if (riskLevel > 40) riskText = 'Medium';
+            
+            document.getElementById('riskLevel').textContent = riskText;
+            
+            // Position risk marker
+            const markerPosition = (riskLevel / 100) * 100;
+            document.getElementById('riskMarker').style.left = `${markerPosition}%`;
+            
+            // Update AI explanation
+            document.getElementById('explanationText').textContent = data.explanation;
+            
+            // Update recommendations
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = '';
+            if (data.recommendations && data.recommendations.length > 0) {
+                data.recommendations.forEach(rec => {
+                    const li = document.createElement('li');
+                    li.textContent = rec;
+                    recommendationsList.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'No specific recommendations at this time.';
+                recommendationsList.appendChild(li);
+            }
+            
+            // Show results panel
+            resultsPanel.style.display = 'block';
+            
+            // Scroll to results
+            resultsPanel.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Get personalized recommendations
+        async function getPersonalizedRecommendations() {
+            // Hide previous messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Show loading indicator
+            loadingIndicator.style.display = 'block';
+            getRecommendationsBtn.disabled = true;
+            
+            try {
+                // Collect current scenario
+                const currentScenario = {
+                    eventType: document.getElementById('eventType').value,
+                    parameters: {
+                        altitude: parseInt(altitudeSlider.value),
+                        inclination: parseInt(inclinationSlider.value),
+                        velocity: parseFloat(velocitySlider.value),
+                        mass: parseInt(massSlider.value)
+                    }
+                };
+                
+                // Call the personalized recommendations API
+                const response = await fetch('/api/simulator/personalized-recommendations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        currentScenario,
+                        userPreferences: {}, // Could be expanded with user settings
+                        skillLevel: 'intermediate', // Would be determined by backend
+                        riskTolerance: 'moderate' // Would be determined by backend
+                    }),
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'Recommendations failed');
+                }
+                
+                // Display personalized recommendations
+                displayPersonalizedRecommendations(data.recommendations);
+                
+                // Show success message
+                showSuccess('Personalized recommendations generated successfully!');
+            } catch (error) {
+                console.error('Recommendations error:', error);
+                showError('Failed to get personalized recommendations. Please try again.');
+            } finally {
+                // Hide loading indicator
+                loadingIndicator.style.display = 'none';
+                getRecommendationsBtn.disabled = false;
+            }
+        }
+        
+        // Display personalized recommendations
+        function displayPersonalizedRecommendations(data) {
+            // Update recommendations section
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = '';
+            
+            if (data.recommendations && data.recommendations.length > 0) {
+                data.recommendations.forEach(rec => {
+                    const li = document.createElement('li');
+                    li.textContent = rec;
+                    recommendationsList.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'No specific recommendations at this time.';
+                recommendationsList.appendChild(li);
+            }
+            
+            // Show results panel
+            resultsPanel.style.display = 'block';
+            
+            // Scroll to results
+            resultsPanel.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Share current scenario
+        async function shareCurrentScenario() {
+            // Hide previous messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            try {
+                // Collect scenario data
+                const scenarioData = {
+                    scenarioName: document.getElementById('scenarioName').value.trim() || 'Untitled Scenario',
+                    description: 'Shared from Space Traffic Simulator',
+                    eventType: document.getElementById('eventType').value,
+                    parameters: {
+                        altitude: parseInt(altitudeSlider.value),
+                        inclination: parseInt(inclinationSlider.value),
+                        velocity: parseFloat(velocitySlider.value),
+                        mass: parseInt(massSlider.value),
+                        launchTime: document.getElementById('launchTime').value
+                    }
+                };
+                
+                // Call the share scenario API
+                const response = await fetch('/api/simulator/share-scenario', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(scenarioData),
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'Sharing failed');
+                }
+                
+                // Show success message
+                showSuccess('Scenario shared with the community successfully!');
+            } catch (error) {
+                console.error('Sharing error:', error);
+                showError('Failed to share scenario. Please try again.');
+            }
+        }
+        
+        // Check user authentication status
+        async function checkAuthStatus() {
+            try {
+                const response = await fetch('/api/user', { credentials: 'include' });
+                const data = await response.json();
+                
+                if (!data.loggedIn) {
+                    // Redirect to login or show message
+                    showError('Please log in to use the Space Traffic Simulator');
+                    runSimulationBtn.disabled = true;
+                }
+            } catch (error) {
+                console.log('Authentication check failed');
+            }
+        }
+        
+        // Fetch and display leaderboard
+        async function fetchLeaderboard() {
+            try {
+                const response = await fetch('/api/simulator/leaderboard', { credentials: 'include' });
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayLeaderboard(data.leaderboard, data.currentUser);
+                } else {
+                    document.getElementById('leaderboardContent').innerHTML = '<p>Error loading leaderboard</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching leaderboard:', error);
+                document.getElementById('leaderboardContent').innerHTML = '<p>Error loading leaderboard</p>';
+            }
+        }
+        
+        // Display leaderboard
+        function displayLeaderboard(leaderboard, currentUser) {
+            let html = `
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: rgba(100, 255, 218, 0.1);">
+                            <th style="text-align: left; padding: 10px;">Rank</th>
+                            <th style="text-align: left; padding: 10px;">User</th>
+                            <th style="text-align: left; padding: 10px;">Score</th>
+                            <th style="text-align: left; padding: 10px;">Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            leaderboard.forEach(entry => {
+                const isCurrentUser = entry.username === currentUser.username;
+                const rowStyle = isCurrentUser ? 'background: rgba(100, 255, 218, 0.2); font-weight: bold;' : '';
+                
+                html += `
+                    <tr style="${rowStyle}">
+                        <td style="padding: 10px;">${entry.rank}</td>
+                        <td style="padding: 10px;">${entry.username} ${isCurrentUser ? '(You)' : ''}</td>
+                        <td style="padding: 10px;">${entry.totalScore}</td>
+                        <td style="padding: 10px;">${entry.level}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+                <p style="margin-top: 15px; text-align: center;">
+                    Your rank: ${currentUser.rank || 'N/A'}
+                </p>
+            `;
+            
+            document.getElementById('leaderboardContent').innerHTML = html;
+        }
+        
+        // Fetch and display NASA data
+        async function fetchNasaData() {
+            try {
+                const response = await fetch('/api/simulator/nasa-data', { credentials: 'include' });
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayNasaData(data.spaceWeather, data.asteroids);
+                } else {
+                    document.getElementById('nasaDataContent').innerHTML = '<p>Error loading space data</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching NASA data:', error);
+                document.getElementById('nasaDataContent').innerHTML = '<p>Error loading space data</p>';
+            }
+        }
+        
+        // Display NASA data
+        function displayNasaData(spaceWeather, asteroids) {
+            let html = `
+                <div style="margin-bottom: 15px;">
+                    <h3>Space Weather</h3>
+            `;
+            
+            // Display recent space weather events
+            if (spaceWeather && spaceWeather.length > 0) {
+                const latestEvent = spaceWeather[spaceWeather.length - 1];
+                html += `
+                    <p><strong>Latest Geomagnetic Storm:</strong> ${latestEvent.gstID || 'N/A'}</p>
+                    <p><strong>Severity:</strong> ${latestEvent.severity || 'Unknown'}</p>
+                `;
+            } else {
+                html += '<p>No recent space weather events</p>';
+            }
+            
+            html += `</div>`;
+            
+            // Display asteroid data
+            html += `
+                <div>
+                    <h3>Near-Earth Objects</h3>
+            `;
+            
+            if (asteroids && asteroids.element_count > 0) {
+                html += `<p><strong>Objects tracked today:</strong> ${asteroids.element_count}</p>`;
+                
+                // Show a few notable asteroids
+                const today = new Date().toISOString().split('T')[0];
+                if (asteroids.near_earth_objects && asteroids.near_earth_objects[today]) {
+                    const todaysAsteroids = asteroids.near_earth_objects[today];
+                    if (todaysAsteroids.length > 0) {
+                        html += '<ul style="max-height: 150px; overflow-y: auto;">';
+                        todaysAsteroids.slice(0, 3).forEach(asteroid => {
+                            html += `
+                                <li>${asteroid.name} - Estimated diameter: ${(asteroid.estimated_diameter.meters.estimated_diameter_min + asteroid.estimated_diameter.meters.estimated_diameter_max) / 2} meters</li>
+                            `;
+                        });
+                        html += '</ul>';
+                        
+                        if (todaysAsteroids.length > 3) {
+                            html += `<p>+${todaysAsteroids.length - 3} more objects</p>`;
+                        }
+                    }
+                }
+            } else {
+                html += '<p>No near-Earth objects currently tracked</p>';
+            }
+            
+            html += `</div>`;
+            
+            document.getElementById('nasaDataContent').innerHTML = html;
+        }
+        
+        // Chatbot functionality
+        const askChatbotBtn = document.getElementById('askChatbot');
+        const chatbotQuestion = document.getElementById('chatbotQuestion');
+        const chatbotLoading = document.getElementById('chatbotLoading');
+        const chatbotResponse = document.getElementById('chatbotResponse');
+        const chatbotAnswer = document.getElementById('chatbotAnswer');
+        
+        askChatbotBtn.addEventListener('click', async () => {
+            const question = chatbotQuestion.value.trim();
+            
+            if (!question) {
+                alert('Please enter a question');
+                return;
+            }
+            
+            // Show loading indicator
+            chatbotLoading.style.display = 'block';
+            chatbotResponse.style.display = 'none';
+            askChatbotBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/simulator/chatbot', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question }),
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Display the response
+                    chatbotAnswer.innerHTML = `<p><strong>Q:</strong> ${data.question}</p><p><strong>A:</strong> ${data.answer}</p>`;
+                    chatbotResponse.style.display = 'block';
+                } else {
+                    chatbotAnswer.innerHTML = `<p>Error: ${data.message}</p>`;
+                    chatbotResponse.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Chatbot error:', error);
+                chatbotAnswer.innerHTML = '<p>An error occurred while processing your question. Please try again.</p>';
+                chatbotResponse.style.display = 'block';
+            } finally {
+                // Hide loading indicator
+                chatbotLoading.style.display = 'none';
+                askChatbotBtn.disabled = false;
+            }
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthStatus();
+            fetchLeaderboard();
+            fetchNasaData();
+        });    </script>
+    <!-- Chat widget: global popup available on main pages -->
+    <script src="/public/js/chat-widget.js" defer></script>
+</body>
+</html> 

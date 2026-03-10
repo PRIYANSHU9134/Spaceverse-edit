@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpaceVerse - VR Solar System</title>
+    <link rel="stylesheet" href="/public/stylesheets/style.css">
+    <style>
+        :root {
+            --space-dark: #050510;
+            --space-light: #1a1a3a;
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-amber: #ffb703;
+            --glass-bg: rgba(20, 20, 40, 0.4);
+            --glass-border: rgba(0, 243, 255, 0.3);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            --text-main: #e2e8f0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--space-dark);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cosmic-background {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -2;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(188, 19, 254, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(255, 183, 3, 0.1) 0%, transparent 40%);
+        }
+        
+        .starfield {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0));
+            background-size: 550px 450px;
+        }
+        
+        .container {
+            max-width: 800px;
+            padding: 2rem;
+            background: var(--glass-bg);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: var(--glass-shadow);
+        }
+        
+        h1 {
+            color: #64FFDA;
+            margin-bottom: 1rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            margin: 10px;
+            background: rgba(100, 255, 218, 0.1);
+            color: #64FFDA;
+            border: 2px solid #64FFDA;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: rgba(100, 255, 218, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, #64FFDA, #00FFFF);
+            color: #0D1117;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #5ae6c8, #00e5e5);
+        }
+        
+        .info-box {
+            background: rgba(255, 255, 255, 0.08);
+            border-left: 4px solid #64FFDA;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: left;
+            border-radius: 0 10px 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="cosmic-background"></div>
+    <div class="starfield"></div>
+    
+    <div class="container">
+        <h1>SpaceVerse VR Experience</h1>
+        <p>We've encountered issues with the advanced VR libraries and have prepared alternative experiences for you.</p>
+        
+        <div class="info-box">
+            <h3>Current Status</h3>
+            <p>The advanced WebXR libraries required for the full VR experience are not loading properly. This is a known issue that we're working to resolve.</p>
+            <p>In the meantime, we've prepared simplified alternatives that still allow you to explore our solar system.</p>
+        </div>
+        
+        <h2>Alternative Experiences</h2>
+        <p>Choose one of the following options:</p>
+        
+        <a href="/vr-fallback" class="btn btn-primary"> Enhanced 2D Experience </a>
+        <a href="/vr-pure-html" class="btn"> Interactive 3D Experience </a>
+        <a href="/" class="btn"> ← Back to Home </a>
+        
+        <div style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.7;">
+            <p>If you'd like to try the original VR experience again, you can visit <a href="/vr-solar-system-original" style="color: #64FFDA;">/vr-solar-system-original</a></p>
+        </div>
+    </div>
+    
+    <script>
+        // Redirect to fallback automatically after 5 seconds
+        setTimeout(() => {
+            window.location.href = '/vr-fallback';
+        }, 5000);
+    </script>
+</body>
+</html>

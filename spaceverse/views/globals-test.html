@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Globals Test</title>
+</head>
+<body>
+    <h1>Globals Test</h1>
+    <div id="results"></div>
+    
+    <!-- Load libraries in order -->
+    <script src="https://unpkg.com/three@0.182.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@react-three/fiber@9.4.2/dist/react-three-fiber.umd.js"></script>
+    <script src="https://unpkg.com/@react-three/xr@6.6.28/dist/react-three-xr.umd.js"></script>
+    
+    <script>
+        function checkGlobals() {
+            const results = [];
+            
+            results.push('<h2>Available Globals:</h2>');
+            results.push(`<p>THREE: ${typeof THREE !== 'undefined' ? '✅ Available' : '❌ Not available'}</p>`);
+            results.push(`<p>React: ${typeof React !== 'undefined' ? '✅ Available' : '❌ Not available'}</p>`);
+            results.push(`<p>ReactDOM: ${typeof ReactDOM !== 'undefined' ? '✅ Available' : '❌ Not available'}</p>`);
+            results.push(`<p>ReactThreeFiber: ${typeof ReactThreeFiber !== 'undefined' ? '✅ Available' : '❌ Not available'}</p>`);
+            results.push(`<p>ReactThreeXR: ${typeof ReactThreeXR !== 'undefined' ? '✅ Available' : '❌ Not available'}</p>`);
+            
+            // Check for alternative names
+            const globalKeys = Object.keys(window);
+            results.push('<h2>All window properties containing "react" or "fiber" or "xr":</h2>');
+            globalKeys.forEach(key => {
+                if (key.toLowerCase().includes('react') || key.toLowerCase().includes('fiber') || key.toLowerCase().includes('xr')) {
+                    results.push(`<p>${key}: ${typeof window[key]}</p>`);
+                }
+            });
+            
+            document.getElementById('results').innerHTML = results.join('');
+        }
+        
+        // Run after all scripts load
+        setTimeout(checkGlobals, 2000);
+    </script>
+</body>
+</html>

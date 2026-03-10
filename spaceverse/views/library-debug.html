@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Debug</title>
+</head>
+<body>
+    <h1>Library Debug</h1>
+    <div id="output">Loading libraries...</div>
+    
+    <!-- Load libraries in order -->
+    <script src="https://unpkg.com/three@0.182.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@react-three/fiber@9.4.2/dist/react-three-fiber.umd.js"></script>
+    <script src="https://unpkg.com/@react-three/xr@6.6.28/dist/react-three-xr.umd.js"></script>
+    
+    <script>
+        // Script to check how UMD libraries expose themselves
+        console.log('=== Library Exposure Check ===');
+        
+        // Function to check for a library in various ways
+        function checkLibrary(name, possibleNames) {
+            console.log(`\n--- Checking ${name} ---`);
+            
+            // Check direct global access
+            if (window[name]) {
+                console.log(`✅ Direct access: window.${name} is available`);
+                if (typeof window[name] === 'object') {
+                    console.log(`   Keys: ${Object.keys(window[name]).slice(0, 10).join(', ')}`);
+                }
+                return window[name];
+            } else {
+                console.log(`❌ Direct access: window.${name} not found`);
+            }
+            
+            // Check possible alternative names
+            for (const altName of possibleNames) {
+                if (window[altName]) {
+                    console.log(`✅ Alternative access: window.${altName} is available`);
+                    if (typeof window[altName] === 'object') {
+                        console.log(`   Keys: ${Object.keys(window[altName]).slice(0, 10).join(', ')}`);
+                    }
+                    return window[altName];
+                }
+            }
+            
+            // Check for partial matches in window properties
+            const windowKeys = Object.keys(window);
+            const matches = windowKeys.filter(key => 
+                key.toLowerCase().includes(name.toLowerCase().replace(/\s+/g, '')) ||
+                name.toLowerCase().includes(key.toLowerCase().replace(/\s+/g, ''))
+            );
+            
+            if (matches.length > 0) {
+                console.log(`🔍 Possible matches in window: ${matches.join(', ')}`);
+                matches.forEach(match => {
+                    if (typeof window[match] === 'object') {
+                        console.log(`   ${match} keys: ${Object.keys(window[match]).slice(0, 5).join(', ')}`);
+                    }
+                });
+            }
+            
+            return null;
+        }
+
+        // Check all libraries after they load
+        setTimeout(() => {
+            const output = document.getElementById('output');
+            let html = '<h2>Library Availability Check</h2>';
+            
+            const three = checkLibrary('THREE', ['THREE']);
+            html += `<p>THREE: ${three ? '✅ Available' : '❌ Not available'}</p>`;
+            
+            const fiber = checkLibrary('ReactThreeFiber', ['Fiber', 'ReactThreeFiber', 'reactThreeFiber']);
+            html += `<p>ReactThreeFiber: ${fiber ? '✅ Available' : '❌ Not available'}</p>`;
+            
+            const xr = checkLibrary('ReactThreeXR', ['XR', 'ReactThreeXR', 'reactThreeXR', 'WebXR']);
+            html += `<p>ReactThreeXR: ${xr ? '✅ Available' : '❌ Not available'}</p>`;
+            
+            // Also check for any property containing 'fiber' or 'xr'
+            html += '<h3>All window properties:</h3><ul>';
+            const allKeys = Object.keys(window);
+            allKeys.forEach(key => {
+                html += `<li>${key}: ${typeof window[key]}</li>`;
+            });
+            html += '</ul>';
+            
+            output.innerHTML = html;
+            
+            console.log('\n=== End Check ===');
+        }, 3000); // Wait for libraries to load
+    </script>
+</body>
+</html>

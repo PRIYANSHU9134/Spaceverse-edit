@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Tracker - Space Missions Worldwide</title>
+    <style>
+        :root {
+            --space-dark: #050510;
+            --space-light: #1a1a3a;
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-amber: #ffb703;
+            --glass-bg: rgba(20, 20, 40, 0.4);
+            --glass-border: rgba(0, 243, 255, 0.3);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            --text-main: #e2e8f0;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, sans-serif;
+            background: var(--space-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .cosmic-background {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -2;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(188, 19, 254, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(255, 183, 3, 0.1) 0%, transparent 40%);
+        }
+        
+        .starfield {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0));
+            background-size: 550px 450px;
+        }
+
+        .navbar {
+            display: none;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffb703;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #E6F1FF;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #ffb703;
+        }
+
+        .logout-btn {
+            background: #ff4d4d;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            color: white;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #ff6666;
+        }
+
+        .back-home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 183, 3, 0.9);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1000;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .back-home-btn:hover {
+            background: #ffb703;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 183, 3, 0.4);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 50px auto 50px;
+            padding: 0 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: #ffb703;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffb703;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #ffb703;
+            color: #000;
+        }
+
+        .missions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .mission-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: var(--glass-shadow);
+            transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .mission-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 40px rgba(0, 243, 255, 0.2);
+            border-color: rgba(0, 243, 255, 0.6);
+        }
+
+        .mission-status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .status-upcoming {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status-completed {
+            background: #2196F3;
+            color: white;
+        }
+
+        .status-active {
+            background: #ff9800;
+            color: white;
+        }
+
+        .mission-card h3 {
+            color: #64FFDA;
+            margin-bottom: 0.5rem;
+            font-size: 1.4rem;
+        }
+
+        .mission-agency {
+            color: #ffb703;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .mission-details {
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .mission-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mission-detail-label {
+            color: #9ca3af;
+        }
+
+        .mission-detail-value {
+            color: #E6F1FF;
+            font-weight: 600;
+        }
+
+        .mission-description {
+            color: rgba(230, 241, 255, 0.8);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: rgba(15, 15, 25, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            margin: 2% auto;
+            padding: 2.5rem;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 800px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 0 50px rgba(0, 243, 255, 0.15);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #ffb703;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: #64FFDA;
+        }
+
+        .cost-highlight {
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .missions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cosmic-background"></div>
+    <div class="starfield"></div>
+    
+    <a href="/" class="back-home-btn">
+        <span>🏠</span>
+        <span>Back to Home</span>
+    </a>
+
+    <nav class="navbar">
+        <div class="logo">🚀 Spaceverse</div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/solar-system">Solar System</a>
+            <a href="/mission-tracker">Mission Tracker</a>
+            <a href="/artemis-2">Artemis 2</a>
+            <a href="/space-launches">Launch Videos</a>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>🛰️ Global Space Mission Tracker</h1>
+            <p>Track upcoming and completed space missions from agencies worldwide</p>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterMissions('all')">All Missions</button>
+            <button class="filter-btn" onclick="filterMissions('upcoming')">Upcoming</button>
+            <button class="filter-btn" onclick="filterMissions('completed')">Completed</button>
+            <button class="filter-btn" onclick="filterMissions('active')">Active</button>
+        </div>
+
+        <div id="missionsContainer" class="missions-grid">
+            <div class="loading">Loading mission data...</div>
+        </div>
+    </div>
+
+    <div id="missionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let allMissions = [];
+        let currentFilter = 'all';
+
+        // Sample mission data (in production, this would come from an API)
+        const missionsData = [
+            {
+                id: 1,
+                name: "Artemis 3",
+                agency: "NASA",
+                status: "upcoming",
+                launchDate: "2026-09-15",
+                endDate: "2026-10-15",
+                cost: "$93 billion (program total)",
+                description: "First crewed lunar landing mission since Apollo 17. Will land astronauts near the lunar south pole to search for water ice.",
+                objectives: [
+                    "First woman and person of color on the Moon",
+                    "Explore lunar south pole region",
+                    "Test new spacesuits and equipment",
+                    "Collect samples and conduct science experiments"
+                ],
+                vehicle: "Space Launch System (SLS) Block 1B",
+                crew: "4 astronauts (to be announced)"
+            },
+            {
+                id: 2,
+                name: "Chandrayaan-4",
+                agency: "ISRO",
+                status: "upcoming",
+                launchDate: "2027-01-20",
+                endDate: "2027-12-20",
+                cost: "$75 million",
+                description: "India's sample return mission to the Moon. Will collect lunar samples and return them to Earth for analysis.",
+                objectives: [
+                    "Collect and return lunar samples",
+                    "Demonstrate sample return capability",
+                    "Study lunar regolith composition",
+                    "Test advanced landing technologies"
+                ],
+                vehicle: "GSLV Mk III",
+                crew: "Uncrewed"
+            },
+            {
+                id: 3,
+                name: "Mars Sample Return",
+                agency: "NASA/ESA",
+                status: "upcoming",
+                launchDate: "2028-07-10",
+                endDate: "2033-09-10",
+                cost: "$7 billion",
+                description: "Multi-mission campaign to retrieve samples collected by Perseverance rover and return them to Earth.",
+                objectives: [
+                    "Retrieve samples from Mars",
+                    "Launch samples into Mars orbit",
+                    "Capture and return samples to Earth",
+                    "Study Mars geology and potential for life"
+                ],
+                vehicle: "Multiple launch vehicles",
+                crew: "Uncrewed"
+            },
+            {
+                id: 4,
+                name: "Gaganyaan-1",
+                agency: "ISRO",
+                status: "upcoming",
+                launchDate: "2025-12-15",
+                endDate: "2025-12-18",
+                cost: "$1.4 billion",
+                description: "India's first crewed spaceflight mission. Will send Indian astronauts to low Earth orbit.",
+                objectives: [
+                    "Demonstrate crewed orbital capability",
+                    "Test life support systems",
+                    "Conduct microgravity experiments",
+                    "Advance India's human spaceflight program"
+                ],
+                vehicle: "GSLV Mk III (Human Rated)",
+                crew: "3 astronauts"
+            },
+            {
+                id: 5,
+                name: "Europa Clipper",
+                agency: "NASA",
+                status: "active",
+                launchDate: "2024-10-14",
+                endDate: "2030-04-11",
+                cost: "$5 billion",
+                description: "Mission to Jupiter's moon Europa to investigate its potential habitability. Currently in transit to Jupiter.",
+                objectives: [
+                    "Study Europa's ice shell thickness",
+                    "Investigate subsurface ocean",
+                    "Analyze surface composition",
+                    "Assess habitability potential"
+                ],
+                vehicle: "SpaceX Falcon Heavy",
+                crew: "Uncrewed"
+            },
+            {
+                id: 6,
+                name: "Artemis 2",
+                agency: "NASA",
+                status: "upcoming",
+                launchDate: "2025-09-01",
+                endDate: "2025-09-11",
+                cost: "$93 billion (program total)",
+                description: "First crewed flight test of SLS and Orion spacecraft. Will perform a lunar flyby with four astronauts aboard.",
+                objectives: [
+                    "Test SLS and Orion with crew",
+                    "Lunar flyby mission",
+                    "Validate life support systems",
+                    "Prepare for Artemis 3 landing"
+                ],
+                vehicle: "Space Launch System Block 1",
+                crew: "Reid Wiseman, Victor Glover, Christina Koch, Jeremy Hansen"
+            },
+            {
+                id: 7,
+                name: "Chandrayaan-3",
+                agency: "ISRO",
+                status: "completed",
+                launchDate: "2023-07-14",
+                endDate: "2023-09-04",
+                cost: "$75 million",
+                description: "Successful lunar landing mission. India became the 4th country to soft-land on the Moon and first to land near the south pole.",
+                objectives: [
+                    "Demonstrate soft landing capability ✓",
+                    "Deploy Pragyan rover ✓",
+                    "Conduct surface experiments ✓",
+                    "Study lunar south pole region ✓"
+                ],
+                vehicle: "GSLV Mk III",
+                crew: "Uncrewed"
+            },
+            {
+                id: 8,
+                name: "James Webb Space Telescope",
+                agency: "NASA/ESA/CSA",
+                status: "completed",
+                launchDate: "2021-12-25",
+                endDate: "Ongoing operations",
+                cost: "$10 billion",
+                description: "Revolutionary space observatory studying the universe in infrared. Successfully deployed and producing groundbreaking science.",
+                objectives: [
+                    "Study first galaxies ✓",
+                    "Analyze exoplanet atmospheres ✓",
+                    "Observe stellar formation ✓",
+                    "Investigate dark matter and energy ✓"
+                ],
+                vehicle: "Ariane 5",
+                crew: "Uncrewed"
+            },
+            {
+                id: 9,
+                name: "SpaceX Demo-2",
+                agency: "SpaceX/NASA",
+                status: "completed",
+                launchDate: "2020-05-30",
+                endDate: "2020-08-02",
+                cost: "$3.1 billion (Commercial Crew Program)",
+                description: "First crewed commercial spacecraft to ISS. Restored US crewed launch capability after Space Shuttle retirement.",
+                objectives: [
+                    "Test Crew Dragon spacecraft ✓",
+                    "Dock with ISS ✓",
+                    "Validate crew systems ✓",
+                    "Safe return to Earth ✓"
+                ],
+                vehicle: "Falcon 9",
+                crew: "Douglas Hurley, Robert Behnken"
+            },
+            {
+                id: 10,
+                name: "Tianwen-1",
+                agency: "CNSA (China)",
+                status: "completed",
+                launchDate: "2020-07-23",
+                endDate: "2021-05-15 (landing)",
+                cost: "$Unknown",
+                description: "China's first independent Mars mission. Successfully landed Zhurong rover on Mars surface.",
+                objectives: [
+                    "Orbit Mars ✓",
+                    "Land rover on surface ✓",
+                    "Study Martian geology ✓",
+                    "Search for water ice ✓"
+                ],
+                vehicle: "Long March 5",
+                crew: "Uncrewed"
+            },
+            {
+                id: 11,
+                name: "Lunar Gateway",
+                agency: "NASA/ESA/JAXA/CSA",
+                status: "upcoming",
+                launchDate: "2025-11-01",
+                endDate: "Permanent facility",
+                cost: "$30+ billion",
+                description: "Lunar orbital station to support Artemis missions and serve as staging point for deep space exploration.",
+                objectives: [
+                    "Establish lunar orbit station",
+                    "Support Artemis landings",
+                    "Enable long-duration missions",
+                    "Test deep space technologies"
+                ],
+                vehicle: "SpaceX Falcon Heavy",
+                crew: "Intermittently crewed"
+            },
+            {
+                id: 12,
+                name: "Dragonfly",
+                agency: "NASA",
+                status: "upcoming",
+                launchDate: "2028-07-01",
+                endDate: "2034-01-01",
+                cost: "$3.4 billion",
+                description: "Rotorcraft lander mission to Saturn's moon Titan. Will fly between landing sites to study prebiotic chemistry.",
+                objectives: [
+                    "Explore Titan's surface",
+                    "Study organic chemistry",
+                    "Search for biosignatures",
+                    "Investigate methane cycle"
+                ],
+                vehicle: "To be determined",
+                crew: "Uncrewed"
+            }
+        ];
+
+        function initializeMissions() {
+            allMissions = missionsData;
+            displayMissions(allMissions);
+        }
+
+        function displayMissions(missions) {
+            const container = document.getElementById('missionsContainer');
+            
+            if (missions.length === 0) {
+                container.innerHTML = '<div class="loading">No missions found for this filter.</div>';
+                return;
+            }
+
+            container.innerHTML = missions.map(mission => `
+                <div class="mission-card" onclick="showMissionDetails(${mission.id})">
+                    <span class="mission-status status-${mission.status}">${mission.status.toUpperCase()}</span>
+                    <h3>${mission.name}</h3>
+                    <div class="mission-agency">${mission.agency}</div>
+                    <div class="mission-details">
+                        <div class="mission-detail-item">
+                            <span class="mission-detail-label">Launch Date:</span>
+                            <span class="mission-detail-value">${new Date(mission.launchDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                        </div>
+                        ${mission.endDate ? `
+                        <div class="mission-detail-item">
+                            <span class="mission-detail-label">End Date:</span>
+                            <span class="mission-detail-value">${mission.endDate === 'Ongoing operations' || mission.endDate === 'Permanent facility' ? mission.endDate : new Date(mission.endDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                        </div>
+                        ` : ''}
+                        <div class="mission-detail-item">
+                            <span class="mission-detail-label">Cost:</span>
+                            <span class="mission-detail-value cost-highlight">${mission.cost}</span>
+                        </div>
+                    </div>
+                    <div class="mission-description">${mission.description.substring(0, 150)}...</div>
+                </div>
+            `).join('');
+        }
+
+        function filterMissions(filter) {
+            currentFilter = filter;
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filter missions
+            const filtered = filter === 'all' ? allMissions : allMissions.filter(m => m.status === filter);
+            displayMissions(filtered);
+        }
+
+        function showMissionDetails(missionId) {
+            const mission = allMissions.find(m => m.id === missionId);
+            if (!mission) return;
+
+            const modal = document.getElementById('missionModal');
+            const modalContent = document.getElementById('modalContent');
+
+            modalContent.innerHTML = `
+                <h2 style="color: #64FFDA; margin-bottom: 1rem;">${mission.name}</h2>
+                <div style="margin-bottom: 1.5rem;">
+                    <span class="mission-status status-${mission.status}">${mission.status.toUpperCase()}</span>
+                    <span style="margin-left: 1rem; color: #ffb703; font-weight: bold;">${mission.agency}</span>
+                </div>
+                <p style="line-height: 1.8; margin-bottom: 1.5rem;">${mission.description}</p>
+                
+                <h3 style="color: #ffb703; margin-bottom: 0.5rem;">Mission Details</h3>
+                <div class="mission-details" style="margin-bottom: 1.5rem;">
+                    <div class="mission-detail-item">
+                        <span class="mission-detail-label">Launch Date:</span>
+                        <span class="mission-detail-value">${new Date(mission.launchDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                    </div>
+                    ${mission.endDate ? `
+                    <div class="mission-detail-item">
+                        <span class="mission-detail-label">End Date:</span>
+                        <span class="mission-detail-value">${mission.endDate === 'Ongoing operations' || mission.endDate === 'Permanent facility' ? mission.endDate : new Date(mission.endDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                    </div>
+                    ` : ''}
+                    <div class="mission-detail-item">
+                        <span class="mission-detail-label">Cost:</span>
+                        <span class="mission-detail-value cost-highlight">${mission.cost}</span>
+                    </div>
+                    <div class="mission-detail-item">
+                        <span class="mission-detail-label">Vehicle:</span>
+                        <span class="mission-detail-value">${mission.vehicle}</span>
+                    </div>
+                    <div class="mission-detail-item">
+                        <span class="mission-detail-label">Crew:</span>
+                        <span class="mission-detail-value">${mission.crew}</span>
+                    </div>
+                </div>
+
+                <h3 style="color: #ffb703; margin-bottom: 0.5rem;">Mission Objectives</h3>
+                <ul style="line-height: 2; margin-left: 1.5rem; margin-bottom: 1.5rem;">
+                    ${mission.objectives.map(obj => `<li>${obj}</li>`).join('')}
+                </ul>
+            `;
+
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('missionModal').style.display = 'none';
+        }
+
+        function logout() {
+            fetch('/api/logout', { method: 'POST' })
+                .then(() => window.location.href = '/');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('missionModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Initialize on page load
+        window.onload = initializeMissions;
+    </script>
+</body>
+</html>

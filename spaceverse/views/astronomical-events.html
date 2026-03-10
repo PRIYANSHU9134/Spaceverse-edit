@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astronomical Events Calendar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --space-dark: #050510;
+            --space-light: #1a1a3a;
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-amber: #ffb703;
+            --glass-bg: rgba(20, 20, 40, 0.4);
+            --glass-border: rgba(0, 243, 255, 0.3);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            --text-main: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--space-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .cosmic-background {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -2;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(188, 19, 254, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(255, 183, 3, 0.1) 0%, transparent 40%);
+        }
+        
+        .starfield {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0));
+            background-size: 550px 450px;
+        }
+
+        .back-home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 183, 3, 0.9);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1000;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .back-home-btn:hover {
+            background: #ffb703;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 183, 3, 0.4);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 2rem 50px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: #64FFDA;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(30, 30, 46, 0.8);
+            padding: 0.5rem;
+            border-radius: 25px;
+            border: 2px solid #64FFDA;
+        }
+
+        .view-btn {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            border-radius: 20px;
+            color: #E6F1FF;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .view-btn.active {
+            background: #64FFDA;
+            color: #000;
+        }
+
+        .view-btn:hover {
+            background: rgba(100, 255, 218, 0.2);
+        }
+
+        .month-selector {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            background: rgba(30, 30, 46, 0.8);
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            border: 2px solid #64FFDA;
+        }
+
+        .month-selector select {
+            background: transparent;
+            border: none;
+            color: #E6F1FF;
+            font-size: 1rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            outline: none;
+            font-weight: bold;
+        }
+
+        .month-selector option {
+            background: #1a1a2e;
+            color: #E6F1FF;
+        }
+
+        /* List View */
+        .list-view {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .list-view.hidden {
+            display: none;
+        }
+
+        .event-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: var(--glass-shadow);
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.2);
+            border-color: rgba(0, 243, 255, 0.6);
+        }
+
+        .event-card.expanded {
+            border-color: var(--neon-amber);
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .event-date {
+            background: #64FFDA;
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .event-type {
+            background: #9457EB;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .event-title {
+            color: #64FFDA;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-summary {
+            color: rgba(230, 241, 255, 0.9);
+            line-height: 1.6;
+        }
+
+        .event-details {
+            display: none;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid rgba(100, 255, 218, 0.3);
+        }
+
+        .event-details.visible {
+            display: block;
+        }
+
+        .detail-section {
+            margin-bottom: 1rem;
+        }
+
+        .detail-label {
+            color: #ffb703;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-content {
+            color: rgba(230, 241, 255, 0.9);
+            line-height: 1.6;
+            padding-left: 1rem;
+        }
+
+        .visibility-map {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .region {
+            background: rgba(100, 255, 218, 0.1);
+            padding: 0.5rem;
+            border-radius: 5px;
+            border-left: 3px solid #64FFDA;
+        }
+
+        .calendar-view {
+            display: none;
+            width: 100%;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+
+        .calendar-view.active {
+            display: block;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+            min-width: 700px;
+        }
+
+        .calendar-header {
+            text-align: center;
+            padding: 1rem;
+            background: #64FFDA;
+            color: #000;
+            font-weight: bold;
+            border-radius: 10px;
+        }
+
+        .calendar-day {
+            background: rgba(30, 30, 46, 0.9);
+            border: 2px solid rgba(100, 255, 218, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            min-height: 120px;
+            position: relative;
+        }
+
+        .day-number {
+            font-weight: bold;
+            color: #64FFDA;
+            margin-bottom: 0.5rem;
+        }
+
+        .calendar-event {
+            background: #9457EB;
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .calendar-event:hover {
+            background: #ffb703;
+            transform: scale(1.05);
+        }
+
+        .empty-day {
+            opacity: 0.3;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cosmic-background"></div>
+    <div class="starfield"></div>
+    
+    <a href="/" class="back-home-btn">
+        <span>🏠</span>
+        <span>Back to Home</span>
+    </a>
+
+    <div class="container">
+        <div class="header">
+            <h1>🌌 Astronomical Events Calendar</h1>
+            <p>Discover celestial events happening throughout the year</p>
+        </div>
+
+        <div class="controls">
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="switchView('list')">📋 List View</button>
+                <button class="view-btn" onclick="switchView('calendar')">📅 Calendar View</button>
+            </div>
+
+            <div class="month-selector">
+                <span>📆</span>
+                <select id="monthSelect" onchange="filterByMonth()">
+                    <option value="all">All Year 2026</option>
+                    <option value="0">January 2026</option>
+                    <option value="1">February 2026</option>
+                    <option value="2">March 2026</option>
+                    <option value="3">April 2026</option>
+                    <option value="4">May 2026</option>
+                    <option value="5">June 2026</option>
+                    <option value="6">July 2026</option>
+                    <option value="7">August 2026</option>
+                    <option value="8">September 2026</option>
+                    <option value="9">October 2026</option>
+                    <option value="10">November 2026</option>
+                    <option value="11">December 2026</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- List View -->
+        <div id="listView" class="list-view"></div>
+
+        <!-- Calendar View -->
+        <div id="calendarView" class="calendar-view"></div>
+    </div>
+
+    <script>
+        const eventsData = [
+            {
+                id: 1,
+                date: new Date(2026, 2, 3),
+                title: "Total Lunar Eclipse",
+                type: "Eclipse",
+                summary: "A total lunar eclipse will be visible from Asia, Australia, and the Pacific region.",
+                description: "During this event, the Moon will pass completely through Earth's umbral shadow, turning a deep red color. This is often called a 'Blood Moon' due to the reddish hue caused by Earth's atmosphere refracting sunlight.",
+                visibility: {
+                    "Asia": "Full eclipse visible",
+                    "Australia": "Full eclipse visible",
+                    "Pacific Region": "Full eclipse visible",
+                    "Western North America": "Partial visibility",
+                    "Europe": "Not visible"
+                },
+                peakTime: "11:33 UTC",
+                duration: "3 hours 28 minutes (totality: 58 minutes)"
+            },
+            {
+                id: 2,
+                date: new Date(2026, 7, 12),
+                title: "Total Solar Eclipse",
+                type: "Eclipse",
+                summary: "A total solar eclipse will cross Spain, Iceland, and parts of Greenland.",
+                description: "This is one of the most spectacular astronomical events where the Moon completely covers the Sun, revealing the solar corona. The path of totality will pass through populated areas of Spain.",
+                visibility: {
+                    "Spain": "Totality visible",
+                    "Iceland": "Totality visible",
+                    "Greenland": "Totality visible",
+                    "Portugal": "Partial eclipse",
+                    "Western Europe": "Partial eclipse"
+                },
+                peakTime: "17:47 UTC",
+                duration: "Totality: up to 2 minutes 18 seconds"
+            },
+            {
+                id: 3,
+                date: new Date(2026, 7, 28),
+                title: "Partial Lunar Eclipse",
+                type: "Eclipse",
+                summary: "A partial lunar eclipse will be visible from South America, Africa, and Europe.",
+                description: "The Moon will partially enter Earth's umbral shadow, creating a dramatic effect where part of the Moon appears darkened.",
+                visibility: {
+                    "South America": "Visible",
+                    "Africa": "Visible",
+                    "Europe": "Visible",
+                    "Eastern North America": "Visible"
+                },
+                peakTime: "04:13 UTC",
+                duration: "3 hours 5 minutes (partial: 94 minutes)"
+            },
+            {
+                id: 4,
+                date: new Date(2026, 3, 22),
+                title: "Lyrid Meteor Shower Peak",
+                type: "Meteor Shower",
+                summary: "The Lyrids will peak, producing up to 20 meteors per hour under optimal conditions.",
+                description: "The Lyrid meteor shower is one of the oldest known meteor showers, with observations dating back 2,700 years. These meteors are debris from Comet C/1861 G1 Thatcher.",
+                visibility: {
+                    "Global": "Visible worldwide",
+                    "Best viewing": "Northern Hemisphere"
+                },
+                peakTime: "After midnight, before dawn",
+                duration: "Active April 16-25, peaks April 22-23"
+            },
+            {
+                id: 5,
+                date: new Date(2026, 4, 6),
+                title: "Eta Aquarids Meteor Shower Peak",
+                type: "Meteor Shower",
+                summary: "Debris from Halley's Comet creates this shower, with up to 60 meteors per hour.",
+                description: "The Eta Aquarids are fast and bright meteors that leave glowing trains. They're visible from both hemispheres, but better viewed from the Southern Hemisphere.",
+                visibility: {
+                    "Global": "Visible worldwide",
+                    "Best viewing": "Southern Hemisphere"
+                },
+                peakTime: "Pre-dawn hours",
+                duration: "Active April 19-May 28, peaks May 6-7"
+            },
+            {
+                id: 6,
+                date: new Date(2026, 5, 21),
+                title: "Summer Solstice",
+                type: "Solstice",
+                summary: "The longest day of the year in the Northern Hemisphere.",
+                description: "The summer solstice marks the moment when the Northern Hemisphere is tilted closest to the Sun, resulting in the longest period of daylight and the official start of summer.",
+                visibility: {
+                    "Global": "Observable worldwide"
+                },
+                peakTime: "08:24 UTC",
+                duration: "Instantaneous event"
+            },
+            {
+                id: 7,
+                date: new Date(2026, 7, 12),
+                title: "Perseid Meteor Shower Peak",
+                type: "Meteor Shower",
+                summary: "One of the best meteor showers of the year, with up to 100 meteors per hour.",
+                description: "The Perseids are famous for their high rates and bright meteors. They're debris from Comet Swift-Tuttle and are considered the most popular meteor shower of the year.",
+                visibility: {
+                    "Global": "Visible worldwide",
+                    "Best viewing": "Northern Hemisphere"
+                },
+                peakTime: "After midnight, before dawn",
+                duration: "Active July 17-August 24, peaks August 12-13"
+            },
+            {
+                id: 8,
+                date: new Date(2026, 9, 21),
+                title: "Orionid Meteor Shower Peak",
+                type: "Meteor Shower",
+                summary: "Another meteor shower from Halley's Comet debris, producing 20 meteors per hour.",
+                description: "The Orionids are known for their speed and brightness. They appear to radiate from the constellation Orion.",
+                visibility: {
+                    "Global": "Visible worldwide"
+                },
+                peakTime: "After midnight",
+                duration: "Active October 2-November 7, peaks October 21-22"
+            },
+            {
+                id: 9,
+                date: new Date(2026, 10, 17),
+                title: "Leonid Meteor Shower Peak",
+                type: "Meteor Shower",
+                summary: "Known for occasional meteor storms, typically produces 15 meteors per hour.",
+                description: "The Leonids are famous for periodic meteor storms that can produce thousands of meteors per hour. The parent comet is 55P/Tempel-Tuttle.",
+                visibility: {
+                    "Global": "Visible worldwide"
+                },
+                peakTime: "After midnight, before dawn",
+                duration: "Active November 6-30, peaks November 17-18"
+            },
+            {
+                id: 10,
+                date: new Date(2026, 11, 13),
+                title: "Geminid Meteor Shower Peak",
+                type: "Meteor Shower",
+                summary: "The best meteor shower of the year, producing up to 120 meteors per hour.",
+                description: "Unlike most meteor showers which come from comets, the Geminids originate from an asteroid (3200 Phaethon). They're known for bright, colorful meteors.",
+                visibility: {
+                    "Global": "Visible worldwide",
+                    "Best viewing": "Northern Hemisphere"
+                },
+                peakTime: "All night",
+                duration: "Active December 4-17, peaks December 13-14"
+            },
+            {
+                id: 11,
+                date: new Date(2026, 11, 21),
+                title: "Winter Solstice",
+                type: "Solstice",
+                summary: "The shortest day of the year in the Northern Hemisphere.",
+                description: "The winter solstice marks when the Northern Hemisphere is tilted furthest from the Sun, resulting in the shortest period of daylight and the official start of winter.",
+                visibility: {
+                    "Global": "Observable worldwide"
+                },
+                peakTime: "20:50 UTC",
+                duration: "Instantaneous event"
+            },
+            {
+                id: 12,
+                date: new Date(2026, 2, 20),
+                title: "March Equinox",
+                type: "Equinox",
+                summary: "Day and night are approximately equal in length worldwide.",
+                description: "The March equinox marks the moment when the Sun crosses the celestial equator, moving northward. It signals the start of spring in the Northern Hemisphere.",
+                visibility: {
+                    "Global": "Observable worldwide"
+                },
+                peakTime: "14:46 UTC",
+                duration: "Instantaneous event"
+            },
+            {
+                id: 13,
+                date: new Date(2026, 8, 22),
+                title: "September Equinox",
+                type: "Equinox",
+                summary: "Day and night are approximately equal in length worldwide.",
+                description: "The September equinox marks when the Sun crosses the celestial equator moving southward. It signals the start of autumn in the Northern Hemisphere.",
+                visibility: {
+                    "Global": "Observable worldwide"
+                },
+                peakTime: "19:05 UTC",
+                duration: "Instantaneous event"
+            },
+            {
+                id: 14,
+                date: new Date(2026, 4, 17),
+                title: "Jupiter at Opposition",
+                type: "Planetary Event",
+                summary: "Jupiter will be at its closest approach to Earth and fully illuminated by the Sun.",
+                description: "Opposition is the best time to view Jupiter through a telescope. The planet will be visible all night and appear at its brightest in the sky.",
+                visibility: {
+                    "Global": "Visible worldwide throughout the night"
+                },
+                peakTime: "All night",
+                duration: "Best viewing for several weeks around this date"
+            },
+            {
+                id: 15,
+                date: new Date(2026, 7, 27),
+                title: "Saturn at Opposition",
+                type: "Planetary Event",
+                summary: "Saturn will be at its closest to Earth with its rings fully visible.",
+                description: "This is the best time of the year to observe Saturn and its magnificent ring system through a telescope.",
+                visibility: {
+                    "Global": "Visible worldwide throughout the night"
+                },
+                peakTime: "All night",
+                duration: "Best viewing for several weeks around this date"
+            }
+        ];
+
+        let currentView = 'list';
+        let filteredEvents = [...eventsData];
+
+        function displayListView() {
+            const container = document.getElementById('listView');
+            container.innerHTML = filteredEvents.map(event => `
+                <div class="event-card" onclick="toggleEventDetails(${event.id})">
+                    <div class="event-header">
+                        <div class="event-date">📅 ${event.date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                        <div class="event-type">${event.type}</div>
+                    </div>
+                    <h3 class="event-title">${event.title}</h3>
+                    <p class="event-summary">${event.summary}</p>
+                    <div class="event-details" id="details-${event.id}">
+                        <div class="detail-section">
+                            <div class="detail-label">📖 Description</div>
+                            <div class="detail-content">${event.description}</div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">⏰ Peak Time</div>
+                            <div class="detail-content">${event.peakTime}</div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">⌛ Duration</div>
+                            <div class="detail-content">${event.duration}</div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">🌍 Visibility Regions</div>
+                            <div class="visibility-map">
+                                ${Object.entries(event.visibility).map(([region, info]) => `
+                                    <div class="region">
+                                        <strong>${region}:</strong> ${info}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayCalendarView() {
+            const container = document.getElementById('calendarView');
+            const monthSelect = document.getElementById('monthSelect');
+            const selectedMonth = monthSelect.value === 'all' ? null : parseInt(monthSelect.value);
+            
+            if (selectedMonth === null) {
+                container.innerHTML = '<p style="text-align: center; padding: 2rem; font-size: 1.2rem;">Please select a specific month to view calendar</p>';
+                return;
+            }
+
+            const year = 2026;
+            const firstDay = new Date(year, selectedMonth, 1);
+            const lastDay = new Date(year, selectedMonth + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+
+            let calendarHTML = `
+                <div class="calendar-grid">
+                    <div class="calendar-header">Sun</div>
+                    <div class="calendar-header">Mon</div>
+                    <div class="calendar-header">Tue</div>
+                    <div class="calendar-header">Wed</div>
+                    <div class="calendar-header">Thu</div>
+                    <div class="calendar-header">Fri</div>
+                    <div class="calendar-header">Sat</div>
+            `;
+
+            // Empty cells for days before month starts
+            for (let i = 0; i < startingDayOfWeek; i++) {
+                calendarHTML += '<div class="calendar-day empty-day"></div>';
+            }
+
+            // Days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayEvents = filteredEvents.filter(event => 
+                    event.date.getDate() === day && 
+                    event.date.getMonth() === selectedMonth
+                );
+
+                calendarHTML += `
+                    <div class="calendar-day">
+                        <div class="day-number">${day}</div>
+                        ${dayEvents.map(event => `
+                            <div class="calendar-event" onclick="showEventModal(${event.id})" title="${event.title}">
+                                ${event.title.substring(0, 20)}${event.title.length > 20 ? '...' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            calendarHTML += '</div>';
+            container.innerHTML = calendarHTML;
+        }
+
+        function switchView(view) {
+            currentView = view;
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const listView = document.getElementById('listView');
+            const calendarView = document.getElementById('calendarView');
+
+            if (view === 'list') {
+                listView.classList.remove('hidden');
+                calendarView.classList.remove('active');
+                displayListView();
+            } else {
+                listView.classList.add('hidden');
+                calendarView.classList.add('active');
+                displayCalendarView();
+            }
+        }
+
+        function filterByMonth() {
+            const monthSelect = document.getElementById('monthSelect');
+            const selectedMonth = monthSelect.value;
+
+            if (selectedMonth === 'all') {
+                filteredEvents = [...eventsData];
+            } else {
+                const month = parseInt(selectedMonth);
+                filteredEvents = eventsData.filter(event => event.date.getMonth() === month);
+            }
+
+            if (currentView === 'list') {
+                displayListView();
+            } else {
+                displayCalendarView();
+            }
+        }
+
+        function toggleEventDetails(eventId) {
+            const details = document.getElementById(`details-${eventId}`);
+            const card = details.closest('.event-card');
+            
+            if (details.classList.contains('visible')) {
+                details.classList.remove('visible');
+                card.classList.remove('expanded');
+            } else {
+                // Close all other expanded cards
+                document.querySelectorAll('.event-details.visible').forEach(el => {
+                    el.classList.remove('visible');
+                    el.closest('.event-card').classList.remove('expanded');
+                });
+                details.classList.add('visible');
+                card.classList.add('expanded');
+            }
+        }
+
+        function showEventModal(eventId) {
+            const event = eventsData.find(e => e.id === eventId);
+            if (event) {
+                alert(`${event.title}
+
+${event.description}
+
+Peak Time: ${event.peakTime}
+Duration: ${event.duration}`);
+            }
+        }
+
+        // Initialize
+        window.onload = () => {
+            displayListView();
+        };
+    </script>
+</body>
+</html>

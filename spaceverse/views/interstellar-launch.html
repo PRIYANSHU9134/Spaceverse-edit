@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interstellar Launch Experience</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&family=Archivo+Narrow:wght@500&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/public/css/interstellar-launch.css">
+    
+    <!-- GSAP & Lenis via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
+</head>
+<body>
+
+    <!-- BACK TO HOME BUTTON -->
+    <a href="/" style="position: fixed; top: 20px; left: 20px; z-index: 10000; color: #00f0ff; font-family: 'Antonio', sans-serif; text-decoration: none; padding: 10px 20px; border: 1px solid #00f0ff; border-radius: 30px; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); text-transform: uppercase;">
+        ⬅ Back to Spaceverse
+    </a>
+
+    <!-- SECTION: Launch Engine -->
+    <section class="launch-engine">
+        <div class="launch-sticky">
+            <canvas id="nebula-canvas"></canvas>
+            <canvas id="ship-canvas"></canvas>
+            
+            <div class="hud-overlay">
+                <div class="hud-corner top-left">
+                    <div class="mission-timer">T-MINUS 00:00:00</div>
+                    <div class="hud-label">PRE-LAUNCH DIAGNOSTICS</div>
+                    <div class="radar-circle"></div>
+                </div>
+                
+                <div class="hud-corner top-right">
+                    <div class="hud-telemetry">
+                        <div>VELOCITY: <span id="telemetry-vel">0.0</span> km/s</div>
+                        <div>ALTITUDE: <span id="telemetry-alt">0.0</span> km</div>
+                        <div>FUEL: <span id="telemetry-fuel">100</span>%</div>
+                    </div>
+                </div>
+
+                <div class="hud-center">
+                    <h1 class="hud-phase" id="phase-text">IDLE</h1>
+                    <div class="scanning-line"></div>
+                </div>
+
+                <div class="hud-corner bottom-left">
+                    <div class="compass-ring"></div>
+                    <div class="hud-label">NAV: <span id="mode-text">STANDBY</span></div>
+                </div>
+                
+                <div class="hud-corner bottom-right">
+                    <div class="engine-bar"><div class="engine-fill" id="telemetry-thrust"></div></div>
+                    <div class="hud-label">THRUST RATING</div>
+                </div>
+                
+                <div class="grid-overlay"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- POST HERO CONTENT -->
+    <div class="content-wrapper">
+        
+        <!-- SECTION 1: Mission Overview -->
+        <section class="content-section mission-overview">
+            <div class="container text-center">
+                <span class="eyebrow">Mission Control</span>
+                <h2 class="section-title">INTERSTELLAR NAVIGATION SYSTEM</h2>
+                <p class="section-desc">
+                    Mankind was born on Earth. It was never meant to die here. The Endurance class vessel is designed to sustain life beyond the boundaries of our known solar system. Initiate standard docking procedures and proceed to the outer rim.
+                </p>
+                <div class="btn-group">
+                    <button class="pill-btn primary">Initialize Core</button>
+                    <button class="pill-btn secondary">View Schematics</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: Fleet Carousel -->
+        <section class="content-section fleet-carousel-section">
+            <div class="container">
+                <h2 class="section-title">OUR FLEET</h2>
+                <div class="carousel-nav">
+                    <button class="nav-btn prev">❮</button>
+                    <button class="nav-btn next">❯</button>
+                </div>
+            </div>
+            <div class="carousel-container">
+                <div class="carousel-track">
+                    <div class="fleet-card">
+                        <div class="card-image explorer"></div>
+                        <div class="card-content">
+                            <h3>Explorer Class</h3>
+                            <div class="specs">
+                                <span>Speed: .9c</span>
+                                <span>Class: Deep Recon</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fleet-card">
+                        <div class="card-image carrier"></div>
+                        <div class="card-content">
+                            <h3>Deep Space Carrier</h3>
+                            <div class="specs">
+                                <span>Speed: .4c</span>
+                                <span>Class: Transport</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fleet-card">
+                        <div class="card-image shuttle"></div>
+                        <div class="card-content">
+                            <h3>Orbital Shuttle</h3>
+                            <div class="specs">
+                                <span>Speed: Mach 25</span>
+                                <span>Class: LEO Transit</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fleet-card">
+                        <div class="card-image lander"></div>
+                        <div class="card-content">
+                            <h3>Planetary Lander</h3>
+                            <div class="specs">
+                                <span>Speed: Mach 5</span>
+                                <span>Class: Descent Module</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: Cinematic Banner -->
+        <section class="content-section cinematic-banner">
+            <div class="banner-overlay">
+                <h2 class="banner-title">EXPLORE BEYOND THE STARS</h2>
+            </div>
+        </section>
+
+        <!-- SECTION 4: Mission Categories -->
+        <section class="content-section mission-categories">
+            <div class="container">
+                <div class="grid-3">
+                    <div class="category-card exploration">
+                        <div class="cat-content">
+                            <h3>Exploration</h3>
+                            <button class="pill-btn outline">Learn More</button>
+                        </div>
+                    </div>
+                    <div class="category-card colonization">
+                        <div class="cat-content">
+                            <h3>Colonization</h3>
+                            <button class="pill-btn outline">Learn More</button>
+                        </div>
+                    </div>
+                    <div class="category-card defense">
+                        <div class="cat-content">
+                            <h3>Defense</h3>
+                            <button class="pill-btn outline">Learn More</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- FOOTER -->
+        <footer class="site-footer">
+            <div class="container footer-grid">
+                <div class="footer-col">
+                    <h4>Technology</h4>
+                    <ul>
+                        <li><a href="#">Propulsion</a></li>
+                        <li><a href="#">Life Support</a></li>
+                        <li><a href="#">Navigation</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Fleet</h4>
+                    <ul>
+                        <li><a href="#">Endurance</a></li>
+                        <li><a href="#">Ranger</a></li>
+                        <li><a href="#">Lander</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Comms Link</a></li>
+                        <li><a href="#">Manuals</a></li>
+                        <li><a href="#">Diagnostics</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">Mission</a></li>
+                        <li><a href="#">Crew</a></li>
+                        <li><a href="#">Careers</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="container footer-bottom">
+                <p>&copy; 2026 Interstellar Exploration. All systems nominal.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- MAIN JS -->
+    <script src="/public/js/interstellar-launch.js"></script>
+</body>
+</html>

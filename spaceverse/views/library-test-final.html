@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Test Final</title>
+</head>
+<body>
+    <h1>Library Test Final</h1>
+    <div id="results"></div>
+    
+    <!-- Load libraries in the correct order -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.182.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
+    
+    <script>
+        // Wait a bit for React and ReactDOM to load
+        setTimeout(() => {
+            // Check what's available
+            console.log('=== Library Availability ===');
+            console.log('THREE:', typeof THREE);
+            console.log('React:', typeof React);
+            console.log('ReactDOM:', typeof ReactDOM);
+            
+            // Try to dynamically load the fiber library
+            const fiberScript = document.createElement('script');
+            fiberScript.src = 'https://cdn.jsdelivr.net/npm/@react-three/fiber@9.4.2/dist/react-three-fiber.esm.js';
+            fiberScript.type = 'module';
+            fiberScript.onload = () => {
+                console.log('@react-three/fiber loaded as module');
+            };
+            fiberScript.onerror = (err) => {
+                console.error('Failed to load @react-three/fiber:', err);
+            };
+            document.head.appendChild(fiberScript);
+            
+            // Try to dynamically load the xr library
+            const xrScript = document.createElement('script');
+            xrScript.src = 'https://cdn.jsdelivr.net/npm/@react-three/xr@6.6.28/dist/index.js';
+            xrScript.type = 'module';
+            xrScript.onload = () => {
+                console.log('@react-three/xr loaded as module');
+            };
+            xrScript.onerror = (err) => {
+                console.error('Failed to load @react-three/xr:', err);
+            };
+            document.head.appendChild(xrScript);
+            
+            // Display results
+            const results = document.getElementById('results');
+            results.innerHTML = `
+                <h2>Library Load Test</h2>
+                <p>THREE: ${typeof THREE !== 'undefined' ? '✅ Available' : '❌ Not available'}</p>
+                <p>React: ${typeof React !== 'undefined' ? '✅ Available' : '❌ Not available'}</p>
+                <p>ReactDOM: ${typeof ReactDOM !== 'undefined' ? '✅ Available' : '❌ Not available'}</p>
+                <p>Check browser console for module loading results</p>
+            `;
+        }, 1000);
+    </script>
+</body>
+</html>
